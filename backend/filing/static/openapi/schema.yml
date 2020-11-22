@@ -1,0 +1,257 @@
+openapi: 3.0.2
+info:
+  title: Form Thirteen API Documentation
+  description: |
+    This is documentation on how to access Form Thirteen (13F) SEC filing data through an API.
+  version: 1.0.0
+externalDocs:
+  description: Find out more about accessing SEC data.
+  url: https://www.sec.gov/edgar/searchedgar/accessing-edgar-data.htm
+paths:
+  /api/filing-periods/:
+    get:
+      operationId: RetrieveFilingPeriods
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+  /api/filings/:
+    get:
+      operationId: RetrieveFilingViewSet
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+  /api/holdings/:
+    get:
+      operationId: RetrieveHoldingViewSet
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+  /api/holdings/{cik}/:
+    get:
+      operationId: holdings_by_cikHoldingViewSet
+      description: ''
+      parameters:
+      - name: cik
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+  /api/holdings/{cik}/historical/{cusip}/:
+    get:
+      operationId: historical_holdings_by_cikHoldingViewSet
+      description: ''
+      parameters:
+      - name: cik
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      - name: cusip
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+  /api/cik/:
+    get:
+      operationId: cik_listCikViewSet
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+  /api/cusip/:
+    get:
+      operationId: cusip_listCusipViewSet
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+  /api/cusip/{cusip}/historical/:
+    get:
+      operationId: historical_cusip_average_priceCusipViewSet
+      description: 'Calculate the average price of a security per quarter
+
+        by dividing the total sum of all holdings for a CUSIP
+
+        by the total number of shares reported by all filers'
+      parameters:
+      - name: cusip
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+  /api/cusip/{cusip}/{period}/:
+    get:
+      operationId: RetrieveCusipViewSet
+      description: ''
+      parameters:
+      - name: cusip
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      - name: period
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+  /api/cusip/{cusip}/cik/{period}/:
+    get:
+      operationId: cik_by_cusipCusipViewSet
+      description: "Show all Investors that hold a security (CUSIP)\nwith details\
+        \ for each investor including:\n    - first Quarter held\n    - Current period\
+        \ total value and total total_shares\n    - cik number / filing name"
+      parameters:
+      - name: cusip
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      - name: period
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+  /api/cik/{cik}/portfolio/period/:
+    get:
+      operationId: portfolio_by_periodCikViewSet
+      description: ''
+      parameters:
+      - name: cik
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+  /api/cik/{cik}/portfolio/summary/:
+    get:
+      operationId: listportfolio_summarys
+      description: ''
+      parameters:
+      - name: cik
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+          description: ''
+  /api/cik/{cik}/portfolio/historical/:
+    get:
+      operationId: historical_portfolio_valueCikViewSet
+      description: ''
+      parameters:
+      - name: cik
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+  /api/funds/scatterplot/{period}/:
+    get:
+      operationId: Retrievefunds_scatterplot
+      description: ''
+      parameters:
+      - name: period
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+  /api/dashboard/:
+    get:
+      operationId: listdashboards
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+          description: ''

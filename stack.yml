@@ -1,0 +1,115 @@
+version: "3.4"
+
+services:
+  postgres:
+    image: postgres
+    networks:
+      - main
+    environment:
+      - POSTGRES_PASSWORD
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:alpine
+    volumes:
+      - redisdata:/data
+    networks:
+      - main
+
+  traefik:
+    image: traefik:v2.0.2
+    ports:
+      - "80:80"
+      - "443:443"
+    command:
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.swarmMode=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=traefik-public"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencryptresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencryptresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencryptresolver.acme.email=brian@briancaffey.com"
+      - "--certificatesresolvers.letsencryptresolver.acme.storage=/letsencrypt/acme.json"
+    volumes:
+      - letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik-public
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+        - "traefik.http.routers.http-catchall.entrypoints=web,websecure"
+        - "traefik.http.routers.http-catchall.middlewares=redirect-to-https@docker"
+        - "traefik.http.routers.http-catchall.service=redirect-service"
+        - "traefik.http.services.redirect-service.loadbalancer.server.port=80"
+        - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+
+  backend:
+    image: ${CI_REGISTRY_IMAGE}/backend:${CI_COMMIT_SHORT_SHA}
+    networks:
+      - main
+    environment:
+      - DJANGO_SETTINGS_MODULE=backend.settings.production
+      - POSTGRES_PASSWORD
+      - SECRET_KEY
+      - DEBUG
+      - DOMAIN_NAME
+      - DJANGO_SUPERUSER_EMAIL
+      - DJANGO_SUPERUSER_PASSWORD
+      - DJANGO_SUPERUSER_USERNAME
+    volumes:
+      - backendassets:/code/assets
+    depends_on:
+      - postgres
+      - redis
+      - web
+
+  web:
+    image: ${CI_REGISTRY_IMAGE}/nginx:${CI_COMMIT_SHORT_SHA}
+    networks:
+      - traefik-public
+      - main
+    volumes:
+      - backendassets:/usr/src/app/assets
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.nginx-web.rule=Host(`${DOMAIN_NAME}`)"
+        - "traefik.http.routers.nginx-web.entrypoints=websecure"
+        - "traefik.http.routers.nginx-web.tls.certresolver=letsencryptresolver"
+        - "traefik.http.services.nginx-web.loadbalancer.server.port=80"
+
+networks:
+  traefik-public:
+    external: true
+  main:
+    driver: overlay
+
+volumes:
+  letsencrypt:
+    name: letsencrypt
+    driver: rexray/dobs
+    driver_opts:
+      size: 1
+  backendassets:
+    name: backendassets
+    driver: rexray/dobs
+    driver_opts:
+      size: 1
+  redisdata:
+    name: redisdata
+    driver: rexray/dobs
+    driver_opts:
+      size: 1
+  pgdata:
+    name: pgdata
+    driver: rexray/dobs
+    driver_opts:
+      size: 4

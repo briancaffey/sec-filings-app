@@ -1,0 +1,3 @@
+export POSTGRES_SERVICE_HOST=localhost
+export POSTGRES_PASSWORD=abcd1234!
+export SECRET_KEY=abc123

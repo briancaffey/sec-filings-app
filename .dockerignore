@@ -1,0 +1,7 @@
+quasar/node_modules
+quasar/.quasar/*
+quasar/package-lock.json
+backend/.env
+backend/assets/*
+backend/notebooks/*
+.vscode

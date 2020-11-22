@@ -1,0 +1,155 @@
+version: "3.7"
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:11.5
+    networks:
+      - main
+    ports:
+      - "5434:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis-data:/data
+    container_name: redis
+    networks:
+      - main
+
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOST=redis
+    ports:
+      - "8085:8081"
+    networks:
+      - main
+
+  nginx:
+    container_name: nginx
+    build:
+      context: ./nginx
+      dockerfile: dev/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+    volumes:
+      - ./nginx/dev/dev.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - main
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./quasar
+    networks:
+      - main
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./quasar:/app/:rw
+
+  backend: &backend
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: docker/Dockerfile.dev
+    command:
+      - "python3"
+      - "manage.py"
+      - "runserver_plus"
+      - "0.0.0.0:8000"
+    volumes:
+      - ./backend:/code
+    networks:
+      - main
+    ports:
+      - "8000:8000"
+      - "8888:8888"
+    environment:
+      - DJANGO_SETTINGS_MODULE=backend.settings.development
+      - SECRET_KEY=secret
+      - DEBUG=1
+    depends_on:
+      - postgres
+      - redis
+
+  celery:
+    <<: *backend
+    container_name: celery
+    command:
+      - "watchmedo"
+      - "auto-restart"
+      - "--directory=./"
+      - "--pattern=*.py"
+      - "--recursive"
+      - "--"
+      - "celery"
+      - "--app=backend.celery_app:app"
+      - "worker"
+      - "-Q"
+      - "default"
+      - "--concurrency=1"
+      - "--loglevel=INFO"
+    ports: []
+
+  # celery_other:
+  #   <<: *backend
+  #   container_name: celery_other
+  #   command:
+  #     - "watchmedo"
+  #     - "auto-restart"
+  #     - "--directory=./"
+  #     - "--pattern=*.py"
+  #     - "--recursive"
+  #     - "--"
+  #     - "celery"
+  #     - "worker"
+  #     - "--app=backend.celery_app:app"
+  #     - "-Q"
+  #     - "default"
+  #     - "--concurrency=6"
+  #     - "--loglevel=INFO"
+  #   ports: []
+
+  flower:
+    image: mher/flower:0.9
+    container_name: flower
+    command: --url_prefix=flower --inspect_timeout=20000
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - FLOWER_PORT=5555
+    ports:
+      - 5555:5555
+    networks:
+      - main
+    depends_on:
+      - redis
+
+  mailhog:
+    container_name: mailhog
+    image: mailhog/mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
+    networks:
+      - main
+
+volumes:
+  pg-data:
+  django-static:
+  redis-data:
+
+networks:
+  main:
+    driver: bridge
