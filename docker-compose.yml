@@ -65,6 +65,12 @@ services:
       context: ./backend
       dockerfile: docker/Dockerfile.dev
     command:
+      - "watchmedo"
+      - "auto-restart"
+      - "--directory=./"
+      - "--pattern=*.py"
+      - "--recursive"
+      - "--"
       - "python3"
       - "manage.py"
       - "runserver_plus"

@@ -45,10 +45,13 @@ BASE_APPS = [
     # third part
     "rest_framework",
     # project apps
+    "accounts",
     "core",
     "filing.apps.FilingConfig",
 ]
 
+
+AUTH_USER_MODEL = "accounts.CustomUser"
 
 INSTALLED_APPS = BASE_APPS
 
@@ -98,6 +101,8 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTH_USER_MODEL = "accounts.CustomUser"
 
 WSGI_APPLICATION = "backend.wsgi.application"
 
