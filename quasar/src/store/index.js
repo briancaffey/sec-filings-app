@@ -10,6 +10,7 @@ import dashboard from "./modules/dashboard";
 import investors from "./modules/investors";
 import securities from "./modules/securities";
 import cusip from "./modules/cusip/";
+import auth from "./modules/auth";
 
 Vue.use(Vuex);
 
@@ -33,7 +34,8 @@ export default function(/* { ssrContext } */) {
       dashboard,
       investors,
       securities,
-      cusip
+      cusip,
+      auth
     },
 
     // enable strict mode (adds overhead!)
