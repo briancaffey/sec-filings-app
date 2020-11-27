@@ -28,6 +28,7 @@ urlpatterns = [
         ),
         name="swagger-ui",
     ),
+    path("api/", include("accounts.urls")),
     path("api/", include("core.urls")),
     path("api/", include("filing.urls")),
     path("api/api-auth/", include("rest_framework.urls")),
