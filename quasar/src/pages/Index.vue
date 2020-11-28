@@ -1,11 +1,26 @@
 <template>
   <q-page padding>
-    <q-card>
-      <q-card-section>Welcome!</q-card-section>
+    <q-card v-if="true">
+      <q-card-section class="q-px-md"
+        >Welcome! It looks like you are running this project in
+        <code>{{ env }}</code> mode, awesome! Thank you contributing to this
+        project. To make sure your local development environment is set up
+        correctly, have a look at the checklist.
+      </q-card-section>
+      <q-card-section>
+        <q-btn color="primary">Go to Development Checklist</q-btn>
+      </q-card-section>
     </q-card>
   </q-page>
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      dev: process.env.NODE_ENV === "development",
+      env: process.env.NODE_ENV
+    };
+  }
+};
 </script>

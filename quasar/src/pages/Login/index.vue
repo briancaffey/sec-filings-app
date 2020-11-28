@@ -1,37 +1,59 @@
 <template>
   <q-page padding>
-    <q-card>
-      <q-form @submit.prevent="login">
-        <q-input
-          :color="$store.getters.isDark ? 'black' : 'primary'"
-          :dark="$store.getters.isDark"
-          id="email"
-          v-model="email"
-          type="text"
-          label="Email"
-          autofocus
-        />
-        <q-input
-          :color="$store.getters.isDark ? 'black' : 'primary'"
-          :dark="$store.getters.isDark"
-          id="password"
-          type="password"
-          v-model="password"
-          label="Password"
-        />
+    <div class="login">
+      <q-card class="card">
+        <q-card-section>
+          <div class="text-center q-pa-md q-gutter-md">
+            <q-btn round color="black">
+              <q-icon name="fab fa-google-plus-g" size="1.2rem" />
+            </q-btn>
+            <q-btn round color="black">
+              <q-icon name="fab fa-github" size="1.2rem" />
+            </q-btn>
+            <q-btn round color="black">
+              <q-icon name="fab fa-microsoft" size="1.2rem" />
+            </q-btn>
+            <q-btn round color="black">
+              <q-icon name="fab fa-linkedin" size="1.2rem" />
+            </q-btn>
+          </div>
+        </q-card-section>
 
-        <q-card-actions align="right" class="text-primary">
-          <q-btn
-            :color="$store.getters.isDark ? 'black' : 'primary'"
-            id="login-btn"
-            flat
-            label="Login"
-            type="submit"
-            v-close-popup
-          />
-        </q-card-actions>
-      </q-form>
-    </q-card>
+        <q-card-section>
+          <q-form @submit.prevent="login">
+            <q-input
+              outlined
+              style="padding-bottom:5px;"
+              id="email"
+              v-model="email"
+              type="text"
+              label="Email"
+              autofocus
+            />
+            <q-input
+              outlined
+              style="padding-bottom:5px;margin:auto"
+              id="password"
+              type="password"
+              v-model="password"
+              label="Password"
+            />
+            <q-btn
+              unelevated
+              color="primary"
+              type="submit"
+              class="full-width text-white"
+              label="Login with Email"
+            />
+          </q-form>
+        </q-card-section>
+        <q-card-section class="text-center q-pa-sm">
+          <p class="text-grey-6">
+            If you don't have an account, <u>Sign Up</u>
+          </p>
+        </q-card-section>
+      </q-card>
+    </div>
   </q-page>
 </template>
 
@@ -40,20 +62,35 @@ export default {
   data() {
     return {
       email: process.env.NODE_ENV === "production" ? "" : "admin@company.com",
-      password: process.env.NODE_ENV === "production" ? "" : "password"
+      password: process.env.NODE_ENV === "production" ? "" : "password",
+      redirect: null
     };
   },
+  created() {
+    this.setRedirect();
+    this.$axios.get("/api/login-set-cookie/");
+  },
   methods: {
+    setRedirect() {
+      if ("redirect" in this.$route.query) {
+        this.redirect = this.$route.query.redirect;
+      }
+    },
     login() {
       const vm = this;
-      const { email, password } = this;
+      const { email, password, redirect } = this;
       this.$store
         .dispatch("auth/login", {
           email,
           password
         })
         .then(() => {
-          vm.$router.push("/");
+          if (redirect) {
+            // TODO: redirect not working
+            vm.$router.push("/");
+          } else {
+            vm.$router.push("/");
+          }
         });
       this.email = "";
       this.password = "";
@@ -62,4 +99,16 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.login {
+  text-align: center;
+  display: grid;
+  justify-content: center;
+}
+
+.card {
+  max-width: 95%;
+  min-width: 320px;
+  padding: 20px;
+}
+</style>
