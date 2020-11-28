@@ -11,6 +11,22 @@
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
         <q-toolbar-title> Form Thirteen <span em="1">♚</span> </q-toolbar-title>
+        <q-btn
+          v-if="!$store.getters['auth/getAuthenticated']"
+          outlined
+          color="white"
+          text-color="blue"
+          @click="$router.push('/login')"
+          >Login</q-btn
+        >&nbsp;
+        <q-btn
+          v-if="$store.getters['auth/getAuthenticated']"
+          outlined
+          color="white"
+          text-color="blue"
+          @click="$store.dispatch('auth/logout')"
+          >Logout</q-btn
+        >&nbsp;
         <period-select />
       </q-toolbar>
     </q-header>
@@ -30,6 +46,13 @@
           :key="link.title"
           v-bind="link"
         />
+        <EssentialLink
+          v-if="$store.getters['auth/getAuthenticated']"
+          title="Account"
+          caption="User account"
+          link="/account"
+          icon="person"
+        ></EssentialLink>
       </q-list>
     </q-drawer>
 
@@ -94,14 +117,20 @@ const linksData = [
   {
     title: "Admin",
     caption: "Django Admin",
-    icon: "person",
+    icon: "settings",
     link: "/admin/"
   },
   {
     title: "SEC",
     caption: "SEC Link",
-    icon: "money",
+    icon: "link",
     link: "https://www.sec.gov/edgar/searchedgar/accessing-edgar-data.htm"
+  },
+  {
+    title: "About",
+    caption: "About this project",
+    icon: "info",
+    link: "about"
   }
 ];
 
