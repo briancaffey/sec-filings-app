@@ -16,7 +16,7 @@
           outlined
           color="white"
           text-color="blue"
-          @click="$router.push('login')"
+          @click="$router.push('/login')"
           >Login</q-btn
         >&nbsp;
         <q-btn
