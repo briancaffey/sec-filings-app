@@ -44,6 +44,7 @@ BASE_APPS = [
     "django.contrib.staticfiles",
     # third part
     "rest_framework",
+    "rest_framework.authtoken",
     # project apps
     "accounts",
     "core",

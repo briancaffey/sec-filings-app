@@ -13,10 +13,10 @@ const routes = [
       },
       {
         path: "account",
-        component: () => import("pages/Account/index.vue"),
-        meta: {
-          requiresAuth: true
-        }
+        component: () => import("pages/Account/index.vue")
+        // meta: {
+        //   requiresAuth: true
+        // }
       },
       {
         path: "filings",
