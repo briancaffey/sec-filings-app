@@ -45,6 +45,7 @@ BASE_APPS = [
     # third part
     "rest_framework",
     "rest_framework.authtoken",
+    "social_django",
     # project apps
     "accounts",
     "core",
@@ -55,6 +56,17 @@ BASE_APPS = [
 AUTH_USER_MODEL = "accounts.CustomUser"
 
 INSTALLED_APPS = BASE_APPS
+
+
+# Python Social Auth
+
+SOCIAL_AUTH_POSTGRES_JSONFIELD = True
+
+AUTHENTICATION_BACKENDS = (
+    "social_core.backends.linkedin.LinkedinOAuth2",
+    "django.contrib.auth.backends.ModelBackend",
+)
+
 
 # Middleware
 MIDDLEWARE = [
