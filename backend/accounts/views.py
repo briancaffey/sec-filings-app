@@ -9,9 +9,13 @@ from django.views.decorators.http import require_POST
 # to be used for social authentication with python social auth
 # from requests.exceptions import HTTPError
 # from rest_framework import permissions, serializers, status
-# from rest_framework.decorators import api_view, permission_classes
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.decorators import api_view  # , permission_classes
+
 # from rest_framework.permissions import AllowAny
-# from rest_framework.response import Response
+from rest_framework.response import Response
+
 # from rest_framework.views import APIView
 # from rest_framework_simplejwt.tokens import RefreshToken
 # from social_django.utils import psa
@@ -62,3 +66,16 @@ def login_view(request):
         login(request, user)
         return JsonResponse({"detail": "Success"})
     return JsonResponse({"detail": "Invalid credentials"}, status=400)
+
+
+@api_view(["POST", "DELETE"])
+def request_api_token(request):
+    user = request.user
+    if request.method == "POST":
+        Token.objects.filter(user=user).delete()
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response({"token": token.key})
+
+    else:
+        tokens = Token.objects.filter(user=user).delete()
+        return Response({"detail": "All of your tokens have been deleted"})
