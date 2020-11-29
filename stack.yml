@@ -8,12 +8,12 @@ services:
     environment:
       - POSTGRES_PASSWORD
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - osd_pgdata:/var/lib/postgresql/data
 
   redis:
     image: redis:alpine
     volumes:
-      - redisdata:/data
+      - osd_redisdata:/data
     networks:
       - main
 
@@ -34,7 +34,7 @@ services:
       - "--certificatesresolvers.letsencryptresolver.acme.email=your@email.com"
       - "--certificatesresolvers.letsencryptresolver.acme.storage=/letsencrypt/acme.json"
     volumes:
-      - letsencrypt:/letsencrypt
+      - osd_letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - traefik-public
@@ -89,7 +89,7 @@ services:
       - traefik-public
       - main
     volumes:
-      - backendassets:/usr/src/app/assets
+      - osd_backendassets:/usr/src/app/assets
     deploy:
       labels:
         - "traefik.enable=true"
@@ -106,22 +106,22 @@ networks:
 
 volumes:
   letsencrypt:
-    name: letsencrypt
+    name: osd_letsencrypt
     driver: rexray/dobs
     driver_opts:
       size: 1
   backendassets:
-    name: backendassets
+    name: osd_backendassets
     driver: rexray/dobs
     driver_opts:
       size: 20
   redisdata:
-    name: redisdata
+    name: osd_redisdata
     driver: rexray/dobs
     driver_opts:
       size: 1
   pgdata:
-    name: pgdata
+    name: osd_pgdata
     driver: rexray/dobs
     driver_opts:
       size: 20
