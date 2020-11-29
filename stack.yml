@@ -105,22 +105,22 @@ networks:
     driver: overlay
 
 volumes:
-  letsencrypt:
+  osd_letsencrypt:
     name: osd_letsencrypt
     driver: rexray/dobs
     driver_opts:
       size: 1
-  backendassets:
+  osd_backendassets:
     name: osd_backendassets
     driver: rexray/dobs
     driver_opts:
       size: 20
-  redisdata:
+  osd_redisdata:
     name: osd_redisdata
     driver: rexray/dobs
     driver_opts:
       size: 1
-  pgdata:
+  osd_pgdata:
     name: osd_pgdata
     driver: rexray/dobs
     driver_opts:
