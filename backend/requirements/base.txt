@@ -6,8 +6,9 @@ gunicorn==20.0.4
 kombu==5.0.2
 psycopg2-binary==2.8.6
 redis==3.5.3
+requests==2.25.0
 uritemplate==3.0.1
 
 # python social auth
-social-auth-app-django==4.0.0
+social-auth-app-django==3.4.0
 social-auth-core==3.3.3

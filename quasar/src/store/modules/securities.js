@@ -4,7 +4,7 @@ const state = {
   securities: [],
   loading: false,
   search: "",
-  count: 1000,
+  count: 0,
   currentPage: 1,
   paginationLimit: 5,
   sortBy: "",
