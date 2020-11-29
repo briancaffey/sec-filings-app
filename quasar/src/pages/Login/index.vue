@@ -13,7 +13,7 @@
             <q-btn round color="black">
               <q-icon name="fab fa-microsoft" size="1.2rem" />
             </q-btn>
-            <q-btn round color="black">
+            <q-btn type="a" :href="buildUrl" round color="black">
               <q-icon name="fab fa-linkedin" size="1.2rem" />
             </q-btn>
           </div>
@@ -58,13 +58,32 @@
 </template>
 
 <script>
+import buildURL from "axios/lib/helpers/buildURL";
 export default {
   data() {
     return {
       email: process.env.NODE_ENV === "production" ? "" : "admin@company.com",
       password: process.env.NODE_ENV === "production" ? "" : "password",
-      redirect: null
+      redirect: null,
+      linkedinUrl: {
+        url: "https://www.linkedin.com/oauth/v2/authorization",
+        params: {
+          response_type: "code",
+          client_id: process.env.LINKEDIN_CLIENT_ID,
+          scope: "r_liteprofile r_emailaddress",
+          state: "erferf",
+          redirect_uri: "http://localhost/auth/callback/linkedin-oauth2"
+        }
+      }
     };
+  },
+  computed: {
+    buildUrl() {
+      const url = this.linkedinUrl.url;
+      const params = this.linkedinUrl.params;
+
+      return buildURL(url, params);
+    }
   },
   created() {
     this.setRedirect();

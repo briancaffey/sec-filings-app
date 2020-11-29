@@ -58,6 +58,8 @@ services:
       - "8080:8080"
     volumes:
       - ./quasar:/app/:rw
+    env_file:
+      - .env
 
   backend: &backend
     container_name: backend
@@ -82,10 +84,8 @@ services:
     ports:
       - "8000:8000"
       - "8888:8888"
-    environment:
-      - DJANGO_SETTINGS_MODULE=backend.settings.development
-      - SECRET_KEY=secret
-      - DEBUG=1
+    env_file:
+      - .env
     depends_on:
       - postgres
       - redis

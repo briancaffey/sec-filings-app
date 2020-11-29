@@ -19,6 +19,10 @@ const routes = [
         // }
       },
       {
+        path: "auth/callback/:provider",
+        component: () => import("pages/Login/SocialCallback.vue")
+      },
+      {
         path: "filings",
         component: () => import("pages/Filings.vue"),
         name: "filings"
