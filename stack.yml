@@ -8,12 +8,12 @@ services:
     environment:
       - POSTGRES_PASSWORD
     volumes:
-      - osd_pgdata:/var/lib/postgresql/data
+      - osdpgdata:/var/lib/postgresql/data
 
   redis:
     image: redis:alpine
     volumes:
-      - osd_redisdata:/data
+      - osdredisdata:/data
     networks:
       - main
 
@@ -34,7 +34,7 @@ services:
       - "--certificatesresolvers.letsencryptresolver.acme.email=your@email.com"
       - "--certificatesresolvers.letsencryptresolver.acme.storage=/letsencrypt/acme.json"
     volumes:
-      - osd_letsencrypt:/letsencrypt
+      - osdletsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - traefik-public
@@ -65,7 +65,7 @@ services:
       - DJANGO_SUPERUSER_PASSWORD
       - DJANGO_SUPERUSER_USERNAME
     volumes:
-      - osd_backendassets:/code/assets
+      - osdbackendassets:/code/assets
     depends_on:
       - postgres
       - redis
@@ -89,7 +89,7 @@ services:
       - traefik-public
       - main
     volumes:
-      - osd_backendassets:/usr/src/app/assets
+      - osdbackendassets:/usr/src/app/assets
     deploy:
       labels:
         - "traefik.enable=true"
@@ -105,23 +105,23 @@ networks:
     driver: overlay
 
 volumes:
-  osd_letsencrypt:
-    name: osd_letsencrypt
+  osdletsencrypt:
+    name: osdletsencrypt
     driver: rexray/dobs
     driver_opts:
       size: 1
-  osd_backendassets:
-    name: osd_backendassets
+  osdbackendassets:
+    name: osdbackendassets
     driver: rexray/dobs
     driver_opts:
       size: 20
-  osd_redisdata:
-    name: osd_redisdata
+  osdredisdata:
+    name: osdredisdata
     driver: rexray/dobs
     driver_opts:
       size: 1
-  osd_pgdata:
-    name: osd_pgdata
+  osdpgdata:
+    name: osdpgdata
     driver: rexray/dobs
     driver_opts:
       size: 20
