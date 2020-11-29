@@ -65,7 +65,7 @@ services:
       - DJANGO_SUPERUSER_PASSWORD
       - DJANGO_SUPERUSER_USERNAME
     volumes:
-      - backendassets:/code/assets
+      - osd_backendassets:/code/assets
     depends_on:
       - postgres
       - redis
