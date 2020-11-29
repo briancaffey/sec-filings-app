@@ -2,16 +2,7 @@
   <q-page padding>
     <q-card>
       <q-card-section>
-        Details for <strong>{{ $route.params.cusip }}</strong> (<code
-          ><a
-            :href="
-              `/api/cusip/${$route.params.cusip}/${$store.getters['core/getPeriod'].value}/`
-            "
-            >/api/cusip/{{ $route.params.cusip }}/{{
-              $store.getters["core/getPeriod"].value
-            }}/</a
-          ></code
-        >)
+        Details for <strong>{{ $route.params.cusip }}</strong>
         {{ $store.getters["cusip/getCompanyName"] }}
       </q-card-section>
     </q-card>

@@ -13,6 +13,11 @@
       hide-pagination
       :columns="$store.getters['securities/getColumns']"
     >
+      <template #top-left>
+        <q-btn type="a" :href="`/api/cusip/`"
+          >Securities ({{ $store.getters["securities/getCount"] }})
+        </q-btn>
+      </template>
       <template v-slot:top-right>
         <q-input
           outlined

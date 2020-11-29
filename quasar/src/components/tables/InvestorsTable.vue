@@ -4,7 +4,6 @@
       :loading="$store.getters['investors/getLoading']"
       :hide-bottom="false"
       dense
-      :title="`Investors (${$store.getters['investors/getCount']})`"
       row-key="id"
       :data="$store.getters['investors/getInvestors']"
       :pagination.sync="pagination"
@@ -13,6 +12,13 @@
       hide-pagination
       :columns="$store.getters['investors/getColumns']"
     >
+      <template #top-left>
+        <q-btn
+          type="a"
+          :href="`/api/cik/${$store.getters['core/getPeriod'].value}/`"
+          >Investors ({{ $store.getters["investors/getCount"] }})
+        </q-btn>
+      </template>
       <template v-slot:top-right>
         <q-input
           outlined
@@ -62,11 +68,6 @@
         :boundary-links="true"
         size="sm"
       />
-      <q-btn
-        type="a"
-        :href="`/api/cik/${$store.getters['core/getPeriod'].value}/`"
-        >{{ `/api/cik/${$store.getters["core/getPeriod"].value}/` }}
-      </q-btn>
     </div>
   </div>
 </template>

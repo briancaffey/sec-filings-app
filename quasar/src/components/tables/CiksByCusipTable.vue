@@ -5,7 +5,21 @@
       :columns="$store.getters['cusip/holdingCiks/getColumns']"
       :data="$store.getters['cusip/holdingCiks/getData']"
       :filter="filter"
+      :loading="loading"
     >
+      <template #top-left>
+        <q-btn
+          type="a"
+          style="text-decoration:none; color:black"
+          :href="
+            `/api/cusip/${$route.params.cusip}/cik/${$store.getters['core/getPeriod'].value}/`
+          "
+        >
+          {{
+            `Funds holding ${$store.getters["cusip/getCompanyName"]} (${$store.getters["cusip/holdingCiks/getData"].length})`
+          }}
+        </q-btn>
+      </template>
       <template v-slot:top-right>
         <q-input
           outlined
@@ -49,23 +63,11 @@
         </q-tr>
       </template>
     </q-table>
-    <q-btn
-      type="a"
-      style="text-decoration:none; color:black"
-      :href="
-        `/api/cusip/${$route.params.cusip}/cik/${$store.getters['core/getPeriod'].value}/`
-      "
-    >
-      <code style="text-transform: lowercase"
-        >/api/cusip/{{ $route.params.cusip }}/cik/{{
-          $store.getters["core/getPeriod"].value
-        }}/</code
-      >
-    </q-btn>
   </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   data() {
     return {
@@ -73,8 +75,11 @@ export default {
     };
   },
   computed: {
-    period() {
-      return this.$store.getters["core/getPeriod"].value;
+    ...mapState("core", ["period"]),
+    loading: {
+      get() {
+        return this.$store.getters["cusip/holdingCiks/getLoading"];
+      }
     }
   },
   methods: {
@@ -84,8 +89,10 @@ export default {
     }
   },
   watch: {
-    period(oldPeriod, newPeriod) {
-      this.fetchData();
+    period(newValue, oldValue) {
+      if (newValue !== "-") {
+        this.fetchData();
+      }
     }
   }
 };

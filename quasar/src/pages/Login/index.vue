@@ -4,7 +4,7 @@
       <q-card class="card">
         <q-card-section>
           <div class="text-center q-pa-md q-gutter-md">
-            <q-btn round color="black">
+            <!-- <q-btn round color="black">
               <q-icon name="fab fa-google-plus-g" size="1.2rem" />
             </q-btn>
             <q-btn round color="black">
@@ -12,9 +12,10 @@
             </q-btn>
             <q-btn round color="black">
               <q-icon name="fab fa-microsoft" size="1.2rem" />
-            </q-btn>
-            <q-btn type="a" :href="buildUrl" round color="black">
-              <q-icon name="fab fa-linkedin" size="1.2rem" />
+            </q-btn> -->
+            <q-btn type="a" :href="buildUrl" class="full-width" color="black">
+              <q-icon name="fab fa-linkedin" left size="1.2rem" />
+              Sign in with LinkedIn
             </q-btn>
           </div>
         </q-card-section>
@@ -72,17 +73,18 @@ export default {
           client_id: process.env.LINKEDIN_CLIENT_ID,
           scope: "r_liteprofile r_emailaddress",
           state: "erferf",
-          redirect_uri: "http://localhost/auth/callback/linkedin-oauth2"
+          redirect_uri: "/auth/callback/linkedin-oauth2"
         }
       }
     };
   },
   computed: {
     buildUrl() {
-      const url = this.linkedinUrl.url;
-      const params = this.linkedinUrl.params;
+      const base_url = window.location.origin;
+      const redirect_uri = `${base_url}${this.linkedinUrl.params.redirect_uri}`;
+      const params = { ...this.linkedinUrl.params, redirect_uri };
 
-      return buildURL(url, params);
+      return buildURL(this.linkedinUrl.url, params);
     }
   },
   created() {

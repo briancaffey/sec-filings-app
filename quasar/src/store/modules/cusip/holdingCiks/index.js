@@ -2,6 +2,7 @@ import Vue from "vue";
 
 const state = {
   data: [],
+  loading: false,
   columns: [
     {
       name: "cik_number",
@@ -50,17 +51,21 @@ const state = {
 
 const getters = {
   getData: s => s.data,
-  getColumns: s => s.columns
+  getColumns: s => s.columns,
+  getLoading: s => s.loading
 };
 
 const actions = {
   fetchData: ({ commit, rootGetters }, payload) => {
+    console.log("fetching data....");
+    commit("setLoading", true);
     const { cusip } = payload;
     const period = rootGetters["core/getPeriod"].value;
     Vue.prototype.$axios
       .get(`/api/cusip/${cusip}/cik/${period}/`)
       .then(resp => {
         commit("setData", resp.data);
+        commit("setLoading", false);
       });
   }
 };
@@ -68,6 +73,9 @@ const actions = {
 const mutations = {
   setData: (state, payload) => {
     state.data = payload;
+  },
+  setLoading: (state, payload) => {
+    state.loading = payload;
   }
 };
 

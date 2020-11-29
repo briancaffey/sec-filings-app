@@ -24,4 +24,18 @@ export default async ({ Vue }) => {
     value = value + "%";
     return value;
   });
+
+  Vue.filter("decimals", function(value, decimals) {
+    if (!value) {
+      value = 0;
+    }
+
+    if (!decimals) {
+      decimals = 0;
+    }
+
+    value = value * 100;
+    value = Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
+    return value;
+  });
 };

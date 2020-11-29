@@ -1,6 +1,6 @@
 openapi: 3.0.2
 info:
-  title: Form Thirteen API Documentation
+  title: Open SEC Data API Documentation
   description: |
     This is documentation on how to access Form Thirteen (13F) SEC filing data through an API.
   version: 1.0.0

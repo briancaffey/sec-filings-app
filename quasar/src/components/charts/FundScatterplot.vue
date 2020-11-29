@@ -15,9 +15,7 @@
       :href="
         `/api/funds/scatterplot/${$store.getters['core/getPeriod'].value}/`
       "
-      ><code>{{
-        `/api/funds/scatterplot/${$store.getters["core/getPeriod"].value}/`
-      }}</code></q-btn
+      ><code>API</code></q-btn
     >
   </div>
 </template>

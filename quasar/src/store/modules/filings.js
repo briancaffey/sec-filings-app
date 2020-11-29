@@ -5,7 +5,7 @@ const state = {
   loading: false,
   filings: [],
   search: "",
-  count: 100,
+  count: 0,
   currentPage: 1,
   paginationLimit: 5,
   sortBy: "",

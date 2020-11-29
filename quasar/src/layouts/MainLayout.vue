@@ -10,7 +10,7 @@
           aria-label="Menu"
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
-        <q-toolbar-title> Form Thirteen <span em="1">♚</span> </q-toolbar-title>
+        <q-toolbar-title> Open SEC Data <span em="1">♚</span> </q-toolbar-title>
         <q-btn
           v-if="!$store.getters['auth/getAuthenticated']"
           outlined
@@ -75,7 +75,7 @@ const linksData = [
   {
     title: "Filer Profiling",
     caption: "Side-by-side fund comparisons",
-    icon: "table_chart",
+    icon: "bubble_chart",
     link: "/funds"
   },
   {
@@ -93,13 +93,13 @@ const linksData = [
   {
     title: "Dashboard",
     caption: "High-level View",
-    icon: "file_copy",
+    icon: "dashboard",
     link: "/dashboard"
   },
   {
     title: "Investors",
     caption: "All 13F Filers",
-    icon: "money",
+    icon: "corporate_fare",
     link: "/investors"
   },
   {
@@ -111,7 +111,7 @@ const linksData = [
   {
     title: "API Documentation",
     caption: "OpenAPI Swagger Documentation",
-    icon: "code",
+    icon: "description",
     link: "/api/swagger-ui/"
   },
   {
@@ -125,6 +125,12 @@ const linksData = [
     caption: "SEC Link",
     icon: "link",
     link: "https://www.sec.gov/edgar/searchedgar/accessing-edgar-data.htm"
+  },
+  {
+    title: "Source Code",
+    caption: "Link to GitLab Repository",
+    icon: "code",
+    link: "https://gitlab.com/briancaffey/sec-filings-app"
   },
   {
     title: "About",

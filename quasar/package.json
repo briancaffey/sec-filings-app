@@ -1,8 +1,8 @@
 {
-  "name": "frontend",
+  "name": "open_sec_data",
   "version": "0.0.1",
   "description": "A Quasar Framework app",
-  "productName": "frontend",
+  "productName": "Open SEC Data",
   "author": "Brian <briancaffey2010@gmail.com>",
   "private": true,
   "scripts": {

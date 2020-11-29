@@ -1,23 +1,26 @@
 <template>
   <div>
     <q-page padding>
-      <q-card
-        ><q-card-section
-          >Holding Total: ${{
-            $store.getters["dashboard/getHoldingsTotal"]
-          }}</q-card-section
-        ><q-card-section
-          >Filing Count:
-          {{ $store.getters["dashboard/getFilingCount"] }}</q-card-section
+      <a href="/api/dashboard" style="text-decoration: none; color: black;">
+        <q-card
+          ><q-card-section
+            >Holding Total: ${{
+              $store.getters["dashboard/getHoldingsTotal"] | currency
+            }}</q-card-section
+          ><q-card-section
+            >Filing Count:
+            {{
+              $store.getters["dashboard/getFilingCount"] | currency
+            }}</q-card-section
+          >
+          <q-card-section>
+            Average Holding Value: ${{
+              $store.getters["dashboard/getAverageHoldingValue"] | currency
+            }}</q-card-section
+          ></q-card
         >
-        <q-card-section>
-          Average Holding Value:
-          {{
-            $store.getters["dashboard/getAverageHoldingValue"]
-          }}</q-card-section
-        ></q-card
-      ></q-page
-    >
+      </a>
+    </q-page>
   </div>
 </template>
 

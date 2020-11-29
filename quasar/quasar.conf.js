@@ -120,7 +120,7 @@ module.exports = function(ctx) {
         navigateFallbackDenylist: [/\/[admin,api,flower]+\/.*/]
       },
       manifest: {
-        name: `frontend`,
+        name: `Open SEC Data`,
         short_name: `frontend`,
         description: `A Quasar Framework app`,
         display: "standalone",

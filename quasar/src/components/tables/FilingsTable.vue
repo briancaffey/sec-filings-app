@@ -12,7 +12,12 @@
       @request="refreshData"
       hide-pagination
       :columns="$store.getters['filings/getColumns']"
-    >
+      >ode>
+      <template #top-left>
+        <q-btn type="a" :href="`/api/filings/`">{{
+          `Filings (${$store.getters["filings/getCount"]})`
+        }}</q-btn></template
+      >
       <template v-slot:top-right>
         <q-input
           outlined
@@ -73,9 +78,6 @@
         :boundary-links="true"
         size="sm"
       />
-      <q-btn type="a" :href="`/api/filings/`"
-        ><pre>{{ `/api/filings/` }}</pre></q-btn
-      >
     </div>
   </div>
 </template>
