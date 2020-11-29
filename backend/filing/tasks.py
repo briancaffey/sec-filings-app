@@ -44,7 +44,8 @@ def process_filing_list(filing_list_id):
     lines = filing_list.datafile.read().decode("utf-8").split("\n")
 
     FilingTuple = namedtuple(
-        "Filing", ["cik", "company_name", "form_type", "date_filed", "filename"],
+        "Filing",
+        ["cik", "company_name", "form_type", "date_filed", "filename"],
     )
 
     # build list of 13F filing data
