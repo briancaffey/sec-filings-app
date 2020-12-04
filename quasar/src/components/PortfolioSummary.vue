@@ -62,7 +62,10 @@ export default {
   },
   watch: {
     period(newValue, oldValue) {
-      this.fetchSummary();
+      console.log(newValue, oldValue);
+      if (newValue.value !== "-") {
+        this.fetchSummary();
+      }
     }
   },
   computed: {

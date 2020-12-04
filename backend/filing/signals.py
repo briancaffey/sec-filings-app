@@ -8,15 +8,16 @@ from .tasks import process_filing_list
 
 @receiver(post_save, sender=FilingList)
 def process_filing_list_signal(sender, instance, created, **kwargs):
-    if not created:
-        # https://stackoverflow.com/questions/45276828/handle-post-save-signal-in-celery
-        transaction.on_commit(
-            lambda: process_filing_list.apply_async(args=(instance.pk,))
-        )
+    pass
+    # if not created:
+    #     # https://stackoverflow.com/questions/45276828/handle-post-save-signal-in-celery
+    #     transaction.on_commit(
+    #         lambda: process_filing_list.apply_async(args=(instance.pk,))
+    #     )
 
 
 @receiver(post_delete, sender=FilingList)
-def filing_list_file_dlete(sender, instance, **kwargs):
+def filing_list_file_delete(sender, instance, **kwargs):
     instance.datafile.delete(False)
 
 

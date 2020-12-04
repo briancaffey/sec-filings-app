@@ -97,7 +97,7 @@ class FilingAdmin(admin.ModelAdmin):
         model = Filing
 
     # https://stackoverflow.com/questions/46756086/django-admin-edit-model-select-prefetch-related
-    list_select_related = ("filing_list",)
+    list_select_related = ("filing_list", "cik")
     readonly_fields = ("filing_list",)
 
     list_display = (
@@ -143,7 +143,7 @@ class HoldingAdmin(admin.ModelAdmin):
 
     # raw_id_fields = ["filing"]
 
-    list_select_related = ("filing",)
+    list_select_related = ("filing", "cusip", "filing__cik", "filing__filing_list")
 
     readonly_fields = ("filing",)
     list_display = (
