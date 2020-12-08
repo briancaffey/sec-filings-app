@@ -13,6 +13,9 @@ export default {
         .then(resp => {
           vm.$store.commit("auth/authSuccess");
           vm.$router.push("/");
+        })
+        .catch(err => {
+          vm.$q.notify("There was an error");
         });
     }
   },
