@@ -30,6 +30,8 @@ build-backend:
   script:
     - |
       docker build \
+        --build-arg LINKEDIN_OAUTH2_KEY=${LINKEDIN_OAUTH2_KEY} \
+        --build-arg LINKEDIN_OAUTH2_SECRET=${LINKEDIN_OAUTH2_SECRET} \
         -t $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA \
         -f backend/docker/Dockerfile.prod \
         ./backend/
@@ -42,6 +44,7 @@ build-nginx:
   script:
     - |
       docker build \
+        --build-arg LINKEDIN_OAUTH2_KEY=${LINKEDIN_OAUTH2_KEY} \
         -t $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_SHORT_SHA \
         -f nginx/prod/Dockerfile \
         .

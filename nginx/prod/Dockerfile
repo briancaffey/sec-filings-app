@@ -1,7 +1,7 @@
 # build stage
 FROM node:14 as build-stage
-# ARG FULL_DOMAIN_NAME
-# ENV FULL_DOMAIN_NAME=$FULL_DOMAIN_NAME
+ARG LINKEDIN_OAUTH2_KEY
+ENV LINKEDIN_OAUTH2_KEY=$LINKEDIN_OAUTH2_KEY
 WORKDIR /app/
 COPY quasar/package.json /app/
 RUN npm cache verify
