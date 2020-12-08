@@ -5,7 +5,9 @@ from urllib import parse
 import requests
 
 OAUTH = {
-    "linkedin-oauth2": {"url": "https://www.linkedin.com/oauth/v2/accessToken",},
+    "linkedin-oauth2": {
+        "url": "https://www.linkedin.com/oauth/v2/accessToken",
+    },
 }
 
 

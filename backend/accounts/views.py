@@ -93,7 +93,10 @@ class SocialSerializer(serializers.Serializer):
     Serializer which accepts an OAuth2 code.
     """
 
-    code = serializers.CharField(allow_blank=False, trim_whitespace=True,)
+    code = serializers.CharField(
+        allow_blank=False,
+        trim_whitespace=True,
+    )
 
 
 @api_view(["POST"])
@@ -119,13 +122,11 @@ def exchange_token(request, backend):
     Requests must include the following field
     - `access_token`: The OAuth2 access token provided by the provider
     """
-    print("here....")
 
     serializer = SocialSerializer(data=request.data)
 
     if serializer.is_valid(raise_exception=True):
 
-        print(serializer.validated_data)
         code = serializer.validated_data["code"]
         access_token = get_access_token_from_code(backend, code)
         # set up non-field errors key
