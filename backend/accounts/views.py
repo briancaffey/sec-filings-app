@@ -32,7 +32,7 @@ from .utils.social.oauth import get_access_token_from_code
 
 from django.shortcuts import render
 
-logger = logging.getLogger()
+logger = logging.getLogger("django")
 logger.setLevel(logging.INFO)
 
 # Create your views here.
@@ -77,6 +77,7 @@ def login_view(request):
 
 @api_view(["POST", "DELETE"])
 def request_api_token(request):
+    logger.info("Requesting API Token")
     user = request.user
     if request.method == "POST":
         Token.objects.filter(user=user).delete()

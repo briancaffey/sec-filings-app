@@ -4,7 +4,9 @@ DEBUG_APPS = ["debug_toolbar", "django_extensions"]
 
 INSTALLED_APPS = DEBUG_APPS + BASE_APPS
 
-MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware",] + MIDDLEWARE
+MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+] + MIDDLEWARE
 
 
 def show_toolbar(request):
@@ -32,7 +34,13 @@ GRAPH_MODELS = {
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+        }
+    },
     "loggers": {
         "django": {
             "handlers": ["console"],

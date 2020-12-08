@@ -18,7 +18,7 @@ from .utils import (
     save_filing_list_file_to_model,
 )
 
-logger = logging.getLogger()
+logger = logging.getLogger("django")
 logger.setLevel(logging.INFO)
 
 

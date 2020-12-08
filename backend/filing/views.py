@@ -45,7 +45,7 @@ from .serializers import (
 )
 
 
-logger = logging.getLogger()
+logger = logging.getLogger("django")
 logger.setLevel(logging.INFO)
 
 
@@ -268,9 +268,13 @@ class CusipViewSet(viewsets.ViewSet):
         historical_prices = (
             FilingList.objects.all()
             .annotate(
-                sum_of_value=Sum("filinglist__filing__value", filter=cusip_filter,),
+                sum_of_value=Sum(
+                    "filinglist__filing__value",
+                    filter=cusip_filter,
+                ),
                 sum_of_shares=Sum(
-                    "filinglist__filing__sshPrnamt", filter=cusip_filter,
+                    "filinglist__filing__sshPrnamt",
+                    filter=cusip_filter,
                 ),
                 total_holdings=Count("filinglist__filing", filter=cusip_filter),
                 average_value=ExpressionWrapper(
@@ -439,7 +443,12 @@ def portfolio_summary(request, cik, **kwargs):
     summary = holdings.aggregate(
         total_value=Sum("value"), total_holdings=Count("cusip", distinct=True)
     )
-    return Response({"company_name": cik.filer_name, "summary": summary,})
+    return Response(
+        {
+            "company_name": cik.filer_name,
+            "summary": summary,
+        }
+    )
 
 
 @cache_page(60 * 15)

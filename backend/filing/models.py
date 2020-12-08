@@ -8,7 +8,7 @@ from .tasks import process_filing_list
 
 # Create your models here.
 
-logger = logging.getLogger()
+logger = logging.getLogger("django")
 logger.setLevel(logging.INFO)
 
 
@@ -177,23 +177,43 @@ class Holding(models.Model):
     # cusip_raw = models.CharField(max_length=500, blank=True, null=True)
     cusip = models.ForeignKey("Cusip", related_name="cusip", on_delete=models.CASCADE)
     value = models.DecimalField(
-        "value", null=True, blank=True, max_digits=19, decimal_places=2,
+        "value",
+        null=True,
+        blank=True,
+        max_digits=19,
+        decimal_places=2,
     )
     sshPrnamt = models.DecimalField(
-        "sshPrnamt", null=True, blank=True, max_digits=19, decimal_places=2,
+        "sshPrnamt",
+        null=True,
+        blank=True,
+        max_digits=19,
+        decimal_places=2,
     )
     sshPrnamtType = models.CharField(max_length=500, blank=True, null=True)
     investmentDiscretion = models.CharField(max_length=500, blank=True, null=True)
     putCall = models.CharField(max_length=500, blank=True, null=True)
     otherManager = models.CharField(max_length=500, blank=True, null=True)
     sole = models.DecimalField(
-        "sole", null=True, blank=True, max_digits=19, decimal_places=2,
+        "sole",
+        null=True,
+        blank=True,
+        max_digits=19,
+        decimal_places=2,
     )
     shared = models.DecimalField(
-        "shared", null=True, blank=True, max_digits=19, decimal_places=2,
+        "shared",
+        null=True,
+        blank=True,
+        max_digits=19,
+        decimal_places=2,
     )
     nonee = models.DecimalField(
-        "nonee", null=True, blank=True, max_digits=19, decimal_places=2,
+        "nonee",
+        null=True,
+        blank=True,
+        max_digits=19,
+        decimal_places=2,
     )
 
     class Meta:

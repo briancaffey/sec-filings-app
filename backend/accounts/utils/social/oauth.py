@@ -1,6 +1,10 @@
+import logging
 import os
 import json
 from urllib import parse
+
+logger = logging.getLogger("django")
+logger.setLevel(logging.INFO)
 
 import requests
 
@@ -13,6 +17,11 @@ OAUTH = {
 
 def get_payload(backend, code):
 
+    logger.info("Getting payload")
+
+    domain_name = os.environ.get("DOMAIN_NAME", "localhost")
+    protocol = "http" if domain_name == "localhost" else "https"
+
     key = f"{backend.upper()}_KEY".replace("-", "_")
     secret = f"{backend.upper()}_SECRET".replace("-", "_")
 
@@ -22,12 +31,13 @@ def get_payload(backend, code):
     # https://developer.linkedin.com/blog/posts/2018/redirecting-oauth-uas
     # grant_type=authorization_code&redirect_uri=*&client_id=*&client_secret=*&code=*
     if backend == "linkedin-oauth2":
+        logger.info(f"Backend is: {backend}")
         payload = {
             "code": code,
             "client_id": client_id,
             "client_secret": client_secret,
             "grant_type": "authorization_code",
-            "redirect_uri": "http://localhost/auth/callback/linkedin-oauth2",
+            "redirect_uri": f"{protocol}://{domain_name}/auth/callback/linkedin-oauth2",
         }
 
     return payload
