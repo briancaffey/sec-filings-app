@@ -24,6 +24,9 @@
             </div>
             <div class="text-h6">
               <b>{{ summary.total_holdings | currency }}</b>
+              <small style="color:grey;">
+                ({{ summary.unique_cusips | currency }})</small
+              >
             </div>
           </q-card-section>
         </q-card>

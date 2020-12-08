@@ -441,7 +441,7 @@ def portfolio_summary(request, cik, **kwargs):
     )
 
     summary = holdings.aggregate(
-        total_value=Sum("value"), total_holdings=Count("cusip", distinct=True)
+        total_value=Sum("value"), total_holdings=Count("cusip", distinct=False), unique_cusips=Count("cusip", distinct=True)
     )
     return Response(
         {
