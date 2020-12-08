@@ -22,7 +22,8 @@ export default {
       if (this.$store.getters["core/getPeriod"].value === "-") return;
       this.$axios
         .get(
-          `/api/cik/${this.cik}/portfolio/period/?period=${this.$store.getters["core/getPeriod"].value}`
+          `/api/cik/${this.cik}/portfolio/${this.$store.getters["core/getPeriod"].value}/`,
+          { params: { chart: true } }
         )
         .then(resp => {
           this.results = resp.data.results;
@@ -77,7 +78,7 @@ export default {
           width: [0, 4]
         },
         title: {
-          text: `Holdings by Value ${this.$store.getters["core/getPeriod"].label}`
+          text: `Top 100 Holdings by Value ${this.$store.getters["core/getPeriod"].label}`
         },
         dataLabels: {
           enabled: true,

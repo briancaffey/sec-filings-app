@@ -7,7 +7,8 @@ urlpatterns = [
     path("filings/", views.FilingViewSet.as_view({"get": "get"})),
     path("holdings/", views.HoldingViewSet.as_view({"get": "get"})),
     path(
-        "holdings/<str:cik>/", views.HoldingViewSet.as_view({"get": "holdings_by_cik"}),
+        "holdings/<str:cik>/",
+        views.HoldingViewSet.as_view({"get": "holdings_by_cik"}),
     ),
     path(
         "holdings/<str:cik>/historical/<str:cusip>/",
@@ -36,7 +37,11 @@ urlpatterns = [
         views.CusipViewSet.as_view({"get": "cik_by_cusip"}),
     ),
     path(
-        "cik/<str:cik>/portfolio/period/",
+        "cik/<str:cik>/portfolio/historical/",
+        views.CikViewSet.as_view({"get": "historical_portfolio_value"}),
+    ),
+    path(
+        "cik/<str:cik>/portfolio/<str:period>/",
         views.CikViewSet.as_view({"get": "portfolio_by_period"}),
         name="portfolio-period",
     ),
@@ -44,10 +49,6 @@ urlpatterns = [
         "cik/<str:cik>/portfolio/summary/<str:period>/",
         views.portfolio_summary,
         name="portfolio-summary",
-    ),
-    path(
-        "cik/<str:cik>/portfolio/historical/",
-        views.CikViewSet.as_view({"get": "historical_portfolio_value"}),
     ),
     path(
         "funds/scatterplot/<str:period>/",

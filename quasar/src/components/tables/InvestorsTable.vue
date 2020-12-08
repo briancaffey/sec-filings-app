@@ -85,7 +85,7 @@ export default {
   },
   watch: {
     period(newValue, oldValue) {
-      if (newValue !== "-") {
+      if (newValue.value !== "-") {
         this.refreshData();
       }
     }

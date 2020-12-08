@@ -13,6 +13,16 @@
       hide-pagination
       :columns="$store.getters['portfolio/getColumns']"
     >
+      <template #top-left>
+        <q-btn
+          type="a"
+          :href="
+            `/api/cik/${$route.params.cik}/portfolio/${$store.getters['core/getPeriod'].value}/`
+          "
+        >
+          {{ `Holdings (${$store.getters["core/getPeriod"].label})` }}
+        </q-btn>
+      </template>
       <template v-slot:top-right>
         <q-input
           outlined
@@ -152,7 +162,9 @@ export default {
   },
   watch: {
     period(newValue, oldValue) {
-      this.refreshData();
+      if (newValue.value !== "-") {
+        this.refreshData();
+      }
     }
   },
   computed: {

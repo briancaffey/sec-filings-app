@@ -129,9 +129,7 @@ const actions = {
     const cik = getters.getCik;
     const period = rootGetters["core/getPeriod"].value;
     Vue.prototype.$axios
-      .get(`/api/cik/${cik}/portfolio/period/`, {
-        params: { period, ...getters.getQueryParams }
-      })
+      .get(`/api/cik/${cik}/portfolio/${period}/`, {})
       .then(resp => {
         commit("setHoldings", resp.data);
         commit("setLoading", false);

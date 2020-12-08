@@ -360,18 +360,14 @@ class CikViewSet(viewsets.ViewSet):
 
         return return_data
 
-    def portfolio_by_period(self, request, cik):
+    def portfolio_by_period(self, request, cik, **kwargs):
         cik = Cik.objects.get(cik_number=cik)
-        holdings = Holding.objects.filter(filing__cik=cik)
-        if quarter := request.GET.get("period"):
-            current_period = FilingList.objects.filter(quarter=quarter).first()
-            previous_period = current_period.previous_filing_list()
-            previous_period_holdings = holdings.filter(
-                filing__filing_list=previous_period
-            )
-            holdings = holdings.filter(filing__filing_list=current_period)
-        else:
-            raise serializers.ValidationError({"detail": "Period not provided."})
+        holdings = Holding.objects.filter(
+            filing__cik=cik, filing__filing_list=request.period
+        )
+        previous_period_holdings = Holding.objects.filter(
+            filing__cik=cik, filing__filing_list=request.period.previous_filing_list()
+        )
 
         previous_period_total_portfolio_value = previous_period_holdings.aggregate(
             Sum("value")
@@ -417,8 +413,13 @@ class CikViewSet(viewsets.ViewSet):
             portfolio_holdings_by_value = portfolio_holdings_by_value.order_by(sorting)
 
         self.paginator.default_limit = portfolio_holdings_by_value.count()
+
+        if chart := request.GET.get("chart"):
+            print("there is a chart param")
+            portfolio_holdings_by_value = portfolio_holdings_by_value[:100]
+
         result_page = self.paginator.paginate_queryset(
-            portfolio_holdings_by_value[:100], request
+            portfolio_holdings_by_value, request
         )
 
         serializer = PortfolioByPeriodSerializer(
@@ -441,7 +442,9 @@ def portfolio_summary(request, cik, **kwargs):
     )
 
     summary = holdings.aggregate(
-        total_value=Sum("value"), total_holdings=Count("cusip", distinct=False), unique_cusips=Count("cusip", distinct=True)
+        total_value=Sum("value"),
+        total_holdings=Count("cusip", distinct=False),
+        unique_cusips=Count("cusip", distinct=True),
     )
     return Response(
         {
