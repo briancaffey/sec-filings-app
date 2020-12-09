@@ -5,6 +5,7 @@ import PortfolioHoldingsByPeriodChart from "components/charts/PortfolioHoldingsB
 import HistoricalPortfolioValueChart from "components/charts/HistoricalPortfolioValueChart.vue";
 import PortfolioHoldingsByPeriodTable from "components/tables/PortfolioHoldingsByPeriodTable.vue";
 import CiksByCusipTable from "components/tables/CiksByCusipTable.vue";
+import CusipHistoricalValueChart from "components/charts/CusipHistoricalValueChart.vue";
 import InvestorsTable from "components/tables/InvestorsTable.vue";
 import HoldingsTable from "components/tables/HoldingsTable.vue";
 import SecuritiesTable from "components/tables/SecuritiesTable.vue";
@@ -12,6 +13,7 @@ import FilingsTable from "components/tables/FilingsTable.vue";
 import PeriodSelect from "components/PeriodSelect.vue";
 
 export default async ({ Vue }) => {
+  Vue.component("CusipHistoricalValueChart", CusipHistoricalValueChart);
   Vue.component("FundScatterplot", FundScatterplot);
   Vue.component("HistoricalHoldingsChart", HistoricalHoldingsChart);
   Vue.component("HoldingsTable", HoldingsTable);

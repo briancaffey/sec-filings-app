@@ -8,6 +8,7 @@
     </q-card>
     <br />
     <ciks-by-cusip-table />
+    <cusip-historical-value-chart />
   </q-page>
 </template>
 
@@ -18,7 +19,6 @@ export default {
     fetchData() {
       const cusip = this.$route.params.cusip;
       this.$store.dispatch("cusip/fetchData", cusip);
-      this.$store.dispatch("cusip/historical/fetchData", { cusip });
     }
   },
   computed: {
