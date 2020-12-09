@@ -128,8 +128,11 @@ const actions = {
     if (rootGetters["core/getPeriod"].value === "-") return;
     const cik = getters.getCik;
     const period = rootGetters["core/getPeriod"].value;
+    const params = getters.getQueryParams;
     Vue.prototype.$axios
-      .get(`/api/cik/${cik}/portfolio/${period}/`, {})
+      .get(`/api/cik/${cik}/portfolio/${period}/`, {
+        params: { ...params }
+      })
       .then(resp => {
         commit("setHoldings", resp.data);
         commit("setLoading", false);
