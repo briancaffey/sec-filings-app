@@ -32,6 +32,7 @@ build-backend:
       docker build \
         --build-arg LINKEDIN_OAUTH2_KEY=${LINKEDIN_OAUTH2_KEY} \
         --build-arg LINKEDIN_OAUTH2_SECRET=${LINKEDIN_OAUTH2_SECRET} \
+        --build-arg STRIPE_API_KEY=${STRIPE_API_KEY} \
         --build-arg DOMAIN_NAME=${DOMAIN_NAME} \
         -t $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA \
         -f backend/docker/Dockerfile.prod \
@@ -46,6 +47,7 @@ build-nginx:
     - |
       docker build \
         --build-arg LINKEDIN_OAUTH2_KEY=${LINKEDIN_OAUTH2_KEY} \
+        --build-arg STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY} \
         -t $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_SHORT_SHA \
         -f nginx/prod/Dockerfile \
         .

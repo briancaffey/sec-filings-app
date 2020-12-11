@@ -3,6 +3,11 @@
     <h4>Account</h4>
     <q-card>
       <q-card-section>
+        <div class="text-h6">Purchase Premium</div>
+        <br />
+        <stripe />
+      </q-card-section>
+      <q-card-section>
         <div class="text-h6">API Keys</div>
         <div>You can request API Keys to use in your own application.</div>
         <div>
@@ -36,8 +41,12 @@
 </template>
 
 <script>
+import Stripe from "./Stripe.vue";
 import { copyToClipboard } from "quasar";
 export default {
+  components: {
+    Stripe
+  },
   data() {
     return {
       token: null,

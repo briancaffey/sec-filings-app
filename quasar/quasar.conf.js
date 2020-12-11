@@ -42,10 +42,12 @@ module.exports = function(ctx) {
       vueRouterMode: "history", // available values: 'hash', 'history'
       env: ctx.dev
         ? {
-            LINKEDIN_CLIENT_ID: process.env.LINKEDIN_OAUTH2_KEY
+            LINKEDIN_CLIENT_ID: process.env.LINKEDIN_OAUTH2_KEY,
+            STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY
           }
         : {
-            LINKEDIN_CLIENT_ID: process.env.LINKEDIN_OAUTH2_KEY
+            LINKEDIN_CLIENT_ID: process.env.LINKEDIN_OAUTH2_KEY,
+            STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY
           },
       // transpile: false,
 

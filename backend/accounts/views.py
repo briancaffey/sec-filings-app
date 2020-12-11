@@ -94,10 +94,7 @@ class SocialSerializer(serializers.Serializer):
     Serializer which accepts an OAuth2 code.
     """
 
-    code = serializers.CharField(
-        allow_blank=False,
-        trim_whitespace=True,
-    )
+    code = serializers.CharField(allow_blank=False, trim_whitespace=True,)
 
 
 @api_view(["POST"])

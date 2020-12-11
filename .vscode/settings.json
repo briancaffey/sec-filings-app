@@ -21,5 +21,6 @@
         "editor.tabSize": 2,
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true
-    }
+    },
+    "python.pythonPath": "/home/brian/anaconda3/envs/opensecdata/bin/python"
 }
