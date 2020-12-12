@@ -115,6 +115,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "core.middleware.RequestLogMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "filing.middleware.PeriodMiddleware",
@@ -132,8 +133,7 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
-        # 'rest_framework.authentication.BasicAuthentication',
+        "rest_framework.authentication.TokenAuthentication",
     ),
 }
 
@@ -177,11 +177,7 @@ DATABASES = {
 REDIS_SERVICE_HOST = os.environ.get("REDIS_SERVICE_HOST", "redis")
 
 REDIS = redis.Redis(
-    host=REDIS_SERVICE_HOST,
-    port=6379,
-    db=3,
-    charset="utf-8",
-    decode_responses=True,
+    host=REDIS_SERVICE_HOST, port=6379, db=3, charset="utf-8", decode_responses=True,
 )
 
 CACHES = {
@@ -236,15 +232,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
 
