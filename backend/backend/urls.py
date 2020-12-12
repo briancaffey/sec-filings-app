@@ -34,9 +34,9 @@ urlpatterns = [
     path("api/api-auth/", include("rest_framework.urls")),
 ]
 
-admin.site.site_header = "Form 13 Data Administration"
-admin.site.site_title = "Form 13 Portal"
-admin.site.index_title = "Welcome to Form 13 Admin Portal"
+admin.site.site_header = "Open SEC Data Administration"
+admin.site.site_title = "Open SEC Data Portal"
+admin.site.index_title = "Welcome to the Open SEC Data Admin Portal"
 
 
 if settings.DEBUG:
