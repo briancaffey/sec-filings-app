@@ -122,3 +122,55 @@ First I'll add the following `script` tag to `index.template.html`:
 ```
 
 To be continued...
+
+
+## High-level Overview
+
+Here's a high level overview of what we need to setup recurring billing for our users: 
+
+### Stripe account
+
+1. A Stripe account with a business setup in Stripe. 
+1. test API keys in local development (publishable key in frontend, secret key on backend)
+1. live API keys in GitLab secrets, .gitlab-ci.yml, Dockerfiles and `docker build` commands as `--build-arg`s
+
+### Backend
+
+1. `stripe` package installed from PyPI
+1. `stripe listen --forward-to localhost/api/stripe-webhooks/` command running using CLI (the key shown in the output of this command must be added to the `STRIPE_WEBHOOK_SECRET`)
+1. django management command to create prices and products
+1. `dj-stripe` to sync Stripe data with Django models
+1. endpoint for Stripe webhooks to listen for events that happen (this can be used with dj-stripe)
+1. endpoint for `create_subscription`
+
+### Frontend
+
+1. Add stripe via CDN to `index.html`: `<script src="https://js.stripe.com/v3/"></script>`
+1. Add a `Stripe.vue` component 
+
+### Frontend `Stripe.vue` component
+
+1. Instantiate `stripe` with `Stripe("PUBLISHABLE_KEY")`
+1. Define `elements` as `stripe.elements()`
+1. In the mounted hook, create and mount the `card` variable
+1. Define a `purchase` function that is called on a button click when card information is filled out and the customer is ready to purhcase
+1. Inside the `purchase` function, call `stripe.createPaymentMethod` that takes in the `card` information. When `createPaymentMethod` completes, call our custom `createSubscription` function. 
+
+### `createSubscription` function
+
+1. This function needs to take in the `paymentMethod.id` that we get from the `result` of `stripe.createPaymentMethod`
+1. This function will `POST` to our Django backend's `/api/stripe/create-subscription/` route (`create_subscription`)
+
+### `/api/stripe/create-subscription/` backend route
+
+1. This function does three things:
+1. get or create the Stripe Customer ID (which is stored on the user model; `request.user.stripe_customer_id`) using `stripe.Customer.create`
+1. Attach the payment method to the customer with `stripe.PaymentMethod.attach`
+1. Set the default payment method on the customer with `stripe.Customer.modify`
+1. Create the subscription with `stripe.Subscription.create`
+1. Finally, this view returns the results of `stripe.Subscription.create` (`JsonResponse(subscription)`). 
+1. We may want to save additional information from the `subscription` on our User model, such as the expiration date, or update a `subscription_status` flag for checking permissions when accessing gated resources.
+
+## Questions
+
+1. Would `PaymentIntent` be appropriate to use here? I'm still not sure how this should be used. 
