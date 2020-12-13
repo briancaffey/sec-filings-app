@@ -12,7 +12,10 @@ class CustomUser(AbstractUser):
 
     username = None
     email = models.EmailField(_("email address"), unique=True)
-    stripe_customer_id = models.CharField(max_length=1000, blank=True, null=True)
+    stripe_customer_id = models.CharField(
+        max_length=1000, blank=True, null=True
+    )
+    subscription_valid_through = models.DateTimeField(null=True, blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="base" ref="card"></div>
+    <div ref="card"></div>
     <br />
     <q-btn color="primary" @click="purchase">Purchase</q-btn>
   </div>

@@ -10,7 +10,7 @@ from django.views.decorators.http import require_POST
 # to be used for social authentication with python social auth
 from requests.exceptions import HTTPError
 
-from rest_framework import serializers, status
+from rest_framework import permissions, serializers, status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.decorators import (
@@ -21,10 +21,11 @@ from rest_framework.decorators import (
 
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from social_django.utils import psa
 
-# from .serializers import UserSerializer
+from .serializers import UserSerializer
 from .utils.social.oauth import get_access_token_from_code
 
 # User = get_user_model()
@@ -36,6 +37,13 @@ logger = logging.getLogger("django")
 logger.setLevel(logging.INFO)
 
 # Create your views here.
+class Profile(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, format=None):
+        user = request.user
+        serialized_user = UserSerializer(user)
+        return Response(serialized_user.data)
 
 
 @require_POST
