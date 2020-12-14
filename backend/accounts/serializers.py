@@ -12,6 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'is_staff',
             'is_superuser',
+            'is_premium',
             'stripe_customer_id',
             'subscription_valid_through',
         )

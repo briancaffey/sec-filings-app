@@ -1,6 +1,14 @@
 <template>
   <div>
-    <div ref="card"></div>
+    <div class="text-h6">Purchase Premium</div>
+    <br />
+    <div>
+      A premium account gives you unlimited API access.
+    </div>
+    <br />
+    <div style="max-width: 350px;">
+      <div ref="card"></div>
+    </div>
     <br />
     <q-btn color="primary" @click="purchase">Purchase</q-btn>
   </div>
@@ -35,7 +43,7 @@ export default {
     });
   },
   mounted: function() {
-    card = elements.create("card", style);
+    card = elements.create("card", { style });
     card.mount(this.$refs.card);
   },
   methods: {
@@ -114,3 +122,33 @@ export default {
   }
 };
 </script>
+
+<style>
+.StripeElement {
+  box-sizing: border-box;
+
+  height: 40px;
+
+  padding: 10px 12px;
+
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background-color: white;
+
+  box-shadow: 0 1px 3px 0 #e6ebf1;
+  -webkit-transition: box-shadow 150ms ease;
+  transition: box-shadow 150ms ease;
+}
+
+.StripeElement--focus {
+  box-shadow: 0 1px 3px 0 #cfd7df;
+}
+
+.StripeElement--invalid {
+  border-color: #fa755a;
+}
+
+.StripeElement--webkit-autofill {
+  background-color: #fefde5 !important;
+}
+</style>

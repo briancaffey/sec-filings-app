@@ -23,7 +23,14 @@ class CustomUserAdmin(UserAdmin):
     )
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        ("Permissions", {"fields": ("is_staff", "is_active", "is_superuser")},),
+        (
+            "Permissions",
+            {"fields": ("is_staff", "is_active", "is_superuser")},
+        ),
+        (
+            "Stripe",
+            {"fields": ("stripe_customer_id", "subscription_valid_through"),},
+        ),
     )
     add_fieldsets = (
         (

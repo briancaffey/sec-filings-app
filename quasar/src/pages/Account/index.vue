@@ -3,9 +3,13 @@
     <h4>Account</h4>
     <q-card>
       <q-card-section>
-        <div class="text-h6">Purchase Premium</div>
+        <div class="text-h6">Account Plan: Basic</div>
+        <div>
+          You currently have a basic account. Upgrade your account for unlimited
+          API access.
+        </div>
         <br />
-        <stripe />
+        <q-btn to="/premium">Purhcase Premium</q-btn>
       </q-card-section>
       <q-card-section>
         <div class="text-h6">API Keys</div>
@@ -41,12 +45,9 @@
 </template>
 
 <script>
-import Stripe from "./Stripe.vue";
 import { copyToClipboard } from "quasar";
 export default {
-  components: {
-    Stripe
-  },
+  components: {},
   data() {
     return {
       token: null,

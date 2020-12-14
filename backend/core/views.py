@@ -50,6 +50,8 @@ def stripe_webhooks(request):
     data_object = data["object"]
     event_type = json.loads(payload)["type"]
 
+    logger.info(f"Event type: {event_type}")
+
     if event_type == "product.created":
         logger.info("Product created successfully.")
 

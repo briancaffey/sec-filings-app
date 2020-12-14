@@ -1,11 +1,19 @@
 import Vue from "vue";
 
 const state = {
-  accountStatus: null,
+  accountStatus: {
+    id: null,
+    email: null,
+    is_staff: null,
+    is_superuser: null,
+    stripe_customer_id: null,
+    subscription_valid_through: null,
+    is_premium: null
+  }
 };
 
 const getters = {
-  getAccountStatus: s => s.accountStatus,
+  getAccountStatus: s => s.accountStatus
 };
 
 const actions = {
@@ -13,12 +21,12 @@ const actions = {
     Vue.prototype.$axios.post("/api/account/", payload).then(resp => {
       commit("setAccount", resp);
     });
-  },
+  }
 };
 
 const mutations = {
   setAccount: (state, payload) => {
-    state.accountStatus = payload.account_status;
+    state.accountStatus = payload.data;
   }
 };
 
