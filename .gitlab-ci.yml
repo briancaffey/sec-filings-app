@@ -17,7 +17,7 @@ Pytest:
   image: python:3.8
   stage: test
   services:
-    - postgres:11.5
+    - postgres:13.1
     - redis:6.0.9-alpine
   variables:
     DJANGO_SETTINGS_MODULE: "backend.settings.gitlab_ci"
