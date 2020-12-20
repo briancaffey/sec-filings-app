@@ -21,6 +21,8 @@ Pytest:
     - redis:6.0.9-alpine
   variables:
     DJANGO_SETTINGS_MODULE: "backend.settings.gitlab_ci"
+    # the database name is too long, setting here explicitly
+    DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/postgres"
     SECRET_KEY: "secret"
     DEBUG: "1"
     POSTGRES_HOST_AUTH_METHOD: trust
