@@ -1,12 +1,9 @@
-import datetime
 import logging
 import os
 
 
 import stripe
 from django.core.management.base import BaseCommand
-
-from filing.models import FilingList
 
 logger = logging.getLogger("django")
 logger.setLevel(logging.INFO)

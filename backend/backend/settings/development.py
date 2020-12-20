@@ -2,11 +2,11 @@ from .base import *  # noqa
 
 DEBUG_APPS = ["debug_toolbar", "django_extensions"]
 
-INSTALLED_APPS = DEBUG_APPS + BASE_APPS
+INSTALLED_APPS = DEBUG_APPS + BASE_APPS  # noqa
 
 MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
-] + MIDDLEWARE
+] + MIDDLEWARE  # noqa
 
 
 def show_toolbar(request):

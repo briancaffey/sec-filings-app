@@ -1,8 +1,6 @@
 from collections import namedtuple
 import io
 import re
-import json
-import os
 import logging
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -37,7 +35,7 @@ def process_filing_file(filing_id):
     xml_entities = [x[5:-6].replace("\n", "") for x in matches]
     assert len(xml_entities) == 2
 
-    edgar_submission = ET.fromstring(xml_entities[0])
+    edgar_submission = ET.fromstring(xml_entities[0])  # noqa
     information_table = ET.fromstring(xml_entities[1])
 
     HoldingTuple = namedtuple(
@@ -59,7 +57,9 @@ def process_filing_file(filing_id):
     )
 
     holding_tuples = []
-    for _, infoTable in enumerate(information_table.findall(f"{XML_SCHEMA}infoTable")):
+    for _, infoTable in enumerate(
+        information_table.findall(f"{XML_SCHEMA}infoTable")
+    ):
         nameOfIssuer = infoTable.find(f"{XML_SCHEMA}nameOfIssuer").text
         titleOfClass = infoTable.find(f"{XML_SCHEMA}titleOfClass").text
         cusip = infoTable.find(f"{XML_SCHEMA}cusip").text.upper()
@@ -82,10 +82,18 @@ def process_filing_file(filing_id):
             otherManager = otherManager.text
         else:
             otherManager = None
-        investmentDiscretion = infoTable.find(f"{XML_SCHEMA}investmentDiscretion").text
-        Sole = infoTable.find(f"{XML_SCHEMA}votingAuthority/{XML_SCHEMA}Sole").text
-        Shared = infoTable.find(f"{XML_SCHEMA}votingAuthority/{XML_SCHEMA}Shared").text
-        None_ = infoTable.find(f"{XML_SCHEMA}votingAuthority/{XML_SCHEMA}None").text
+        investmentDiscretion = infoTable.find(
+            f"{XML_SCHEMA}investmentDiscretion"
+        ).text
+        Sole = infoTable.find(
+            f"{XML_SCHEMA}votingAuthority/{XML_SCHEMA}Sole"
+        ).text
+        Shared = infoTable.find(
+            f"{XML_SCHEMA}votingAuthority/{XML_SCHEMA}Shared"
+        ).text
+        None_ = infoTable.find(
+            f"{XML_SCHEMA}votingAuthority/{XML_SCHEMA}None"
+        ).text
 
         data = {
             "nameOfIssuer": nameOfIssuer,
@@ -152,7 +160,7 @@ def download_filing_list_file(filing_list_id):
     FilingList = apps.get_model("filing", "FilingList")
     filing_list = FilingList.objects.get(pk=filing_list_id)
     BASE_URL = "https://www.sec.gov/Archives/edgar/full-index"
-    filing_list_url = f"{BASE_URL}/{filing_list.filing_year}/QTR{filing_list.filing_quarter}/master.idx"
+    filing_list_url = f"{BASE_URL}/{filing_list.filing_year}/QTR{filing_list.filing_quarter}/master.idx"  # noqa
     response = urllib.request.urlopen(filing_list_url)
     data = response.read()
     return io.BytesIO(data)
@@ -164,9 +172,7 @@ def save_filing_list_file_to_model(filing_list_id):
     filing_list = FilingList.objects.get(pk=filing_list_id)
     with download_filing_list_file(filing_list_id) as fh:
         filing_list.datafile = ContentFile(fh.getvalue())
-        filing_list.datafile.name = (
-            f"filing-list-{filing_list.filing_year}-{filing_list.filing_quarter}.txt"
-        )
+        filing_list.datafile.name = f"filing-list-{filing_list.filing_year}-{filing_list.filing_quarter}.txt"  # noqa
         filing_list.save()
 
 

@@ -1,12 +1,12 @@
 import logging
 import os
 import json
-from urllib import parse
+
+import requests
 
 logger = logging.getLogger("django")
 logger.setLevel(logging.INFO)
 
-import requests
 
 OAUTH = {
     "linkedin-oauth2": {
@@ -37,7 +37,7 @@ def get_payload(backend, code):
             "client_id": client_id,
             "client_secret": client_secret,
             "grant_type": "authorization_code",
-            "redirect_uri": f"{protocol}://{domain_name}/auth/callback/linkedin-oauth2",
+            "redirect_uri": f"{protocol}://{domain_name}/auth/callback/linkedin-oauth2",  # noqa
         }
 
     return payload

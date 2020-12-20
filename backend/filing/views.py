@@ -1,35 +1,27 @@
-import decimal
 import logging
 
-from django.shortcuts import render
 from django.db.models import (
-    Avg,
     F,
     Q,
     Sum,
-    StdDev,
     Count,
-    Max,
     Min,
     ExpressionWrapper,
     FloatField,
 )
 
-from django.http import HttpResponse, JsonResponse
 from django.views.decorators.cache import cache_page
 
 # Create your views here.
-from rest_framework import status, viewsets
+from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
-from rest_framework import serializers
 
 
 from .models import Filing, FilingList, Holding, Cik, Cusip
 from .serializers import (
     DetailCusipSerializer,
-    BaseCusipSerializer,
     CikSerializer,
     CiksByCusipSerializer,
     HistoricalCusipSerializer,
@@ -51,7 +43,9 @@ logger.setLevel(logging.INFO)
 
 class FilingPeriods(viewsets.ViewSet):
     def get(self, request):
-        periods = FilingList.objects.all().exclude(datafile="").order_by("quarter")
+        periods = (
+            FilingList.objects.all().exclude(datafile="").order_by("quarter")
+        )
         serializer = FilingPeriodSerializer(periods, many=True)
         return Response(serializer.data)
 
@@ -80,7 +74,9 @@ class FilingViewSet(viewsets.ViewSet):
         if sorting := request.GET.get("sorting"):
             filings = filings.order_by(sorting)
 
-        filings = result_page = self.paginator.paginate_queryset(filings, request)
+        filings = result_page = self.paginator.paginate_queryset(
+            filings, request
+        )
         serializer = FilingSerializer(result_page, many=True)
         return_data = self.paginator.get_paginated_response(serializer.data)
         return return_data
@@ -144,13 +140,17 @@ class HoldingViewSet(viewsets.ViewSet):
         )
 
         # self.paginator.default_limit = historical_holdings.count()
-        # result_page = self.paginator.paginate_queryset(historical_holdings, request)
+        # result_page = self.paginator.paginate_queryset(
+        #     historical_holdings, request
+        # )
         data = {}
-        serializer = HoldingHistoricalSerializer(historical_holdings, many=True)
+        serializer = HoldingHistoricalSerializer(
+            historical_holdings, many=True
+        )
         data["results"] = serializer.data
         data["company_name"] = cik.filer_name
         # return_data = self.paginator.get_paginated_response(serializer.data)
-        # return_data = return_data.data.update({"updated": "updte"})
+        # return_data = return_data.data.update({"updated": "updated"})
         return Response(data)
 
 
@@ -162,12 +162,19 @@ class CusipViewSet(viewsets.ViewSet):
 
         if search := request.GET.get("search"):
             cusips = cusips.filter(
-                Q(company_name__icontains=search) | Q(cusip_number__icontains=search)
+                Q(company_name__icontains=search)
+                | Q(cusip_number__icontains=search)
             )
 
         cusips = cusips.annotate(
             held_by_funds=Sum("cusip__value"), holding_count=Count("cusip")
-        ).values("held_by_funds", "holding_count", "cusip_number", "company_name", "id")
+        ).values(
+            "held_by_funds",
+            "holding_count",
+            "cusip_number",
+            "company_name",
+            "id",
+        )
 
         if sorting := request.GET.get("sorting"):
             cusips = cusips.order_by(sorting)
@@ -200,7 +207,8 @@ class CusipViewSet(viewsets.ViewSet):
         average_value = 1000 * total_value / total_shares
 
         serializer = DetailCusipSerializer(
-            cusip_object, context={"average_value": average_value, "held_by": held_by}
+            cusip_object,
+            context={"average_value": average_value, "held_by": held_by},
         )
         return Response(serializer.data)
 
@@ -216,9 +224,9 @@ class CusipViewSet(viewsets.ViewSet):
         cusip = Cusip.objects.get(cusip_number=cusip)
 
         # get filing_ciks from holdings
-        filings_from_holdings = Holding.objects.filter(cusip=cusip).values_list(
-            "filing", flat=True
-        )
+        filings_from_holdings = Holding.objects.filter(
+            cusip=cusip
+        ).values_list("filing", flat=True)
 
         # ciks from filings
         ciks_from_filings = Filing.objects.filter(
@@ -232,8 +240,12 @@ class CusipViewSet(viewsets.ViewSet):
             .prefetch_related("filing_cik", "filing_cik__filing_list")
             .annotate(
                 total_portfolio_value=Sum("filing_cik__filing__value"),
-                total_value=Sum("filing_cik__filing__value", filter=cusip_filter),
-                total_shares=Sum("filing_cik__filing__sshPrnamt", filter=cusip_filter),
+                total_value=Sum(
+                    "filing_cik__filing__value", filter=cusip_filter
+                ),
+                total_shares=Sum(
+                    "filing_cik__filing__sshPrnamt", filter=cusip_filter
+                ),
                 first_filed=Min("filing_cik__filing_list__quarter"),
                 percent_of_portfolio=ExpressionWrapper(
                     F("total_value") / F("total_portfolio_value"),
@@ -269,14 +281,14 @@ class CusipViewSet(viewsets.ViewSet):
             FilingList.objects.all()
             .annotate(
                 sum_of_value=Sum(
-                    "filinglist__filing__value",
-                    filter=cusip_filter,
+                    "filinglist__filing__value", filter=cusip_filter,
                 ),
                 sum_of_shares=Sum(
-                    "filinglist__filing__sshPrnamt",
-                    filter=cusip_filter,
+                    "filinglist__filing__sshPrnamt", filter=cusip_filter,
                 ),
-                total_holdings=Count("filinglist__filing", filter=cusip_filter),
+                total_holdings=Count(
+                    "filinglist__filing", filter=cusip_filter
+                ),
                 average_value=ExpressionWrapper(
                     1000 * F("sum_of_value") / F("sum_of_shares"),
                     output_field=FloatField(),
@@ -313,7 +325,9 @@ class CikViewSet(viewsets.ViewSet):
                     "filing_cik__filing__value",
                     filter=Q(filing_cik__filing_list=request.period),
                 ),
-                total_periods_filed=Count("filing_cik__filing_list__id", distinct=True),
+                total_periods_filed=Count(
+                    "filing_cik__filing_list__id", distinct=True
+                ),
             )
             .values(
                 "current_period_holding_count",
@@ -333,7 +347,8 @@ class CikViewSet(viewsets.ViewSet):
 
         if search := request.GET.get("search"):
             ciks = ciks.filter(
-                Q(filer_name__icontains=search) | Q(cik_number__icontains=search)
+                Q(filer_name__icontains=search)
+                | Q(cik_number__icontains=search)
             )
 
         result_page = self.paginator.paginate_queryset(ciks, request)
@@ -353,7 +368,9 @@ class CikViewSet(viewsets.ViewSet):
         )
 
         self.paginator.default_limit = historical_values.count()
-        result_page = self.paginator.paginate_queryset(historical_values, request)
+        result_page = self.paginator.paginate_queryset(
+            historical_values, request
+        )
         serializer = HistoricalPortfolioValueSerializer(result_page, many=True)
 
         return_data = self.paginator.get_paginated_response(serializer.data)
@@ -366,22 +383,28 @@ class CikViewSet(viewsets.ViewSet):
             filing__cik=cik, filing__filing_list=request.period
         )
         previous_period_holdings = Holding.objects.filter(
-            filing__cik=cik, filing__filing_list=request.period.previous_filing_list()
+            filing__cik=cik,
+            filing__filing_list=request.period.previous_filing_list(),
         )
 
-        previous_period_total_portfolio_value = previous_period_holdings.aggregate(
+        previous_period_total_portfolio_value = previous_period_holdings.aggregate(  # noqa
             Sum("value")
-        )["value__sum"]
+        )[
+            "value__sum"
+        ]
         total_portfolio_value = holdings.aggregate(Sum("value"))["value__sum"]
 
         previous_period_portfolio_holdings_by_value = (
             previous_period_holdings.values("cusip", "nameOfIssuer")
             .annotate(
                 total=Sum("value"),
-                percentage=Sum("value") / previous_period_total_portfolio_value,
+                percentage=Sum("value")
+                / previous_period_total_portfolio_value,
                 total_shares=Sum("sshPrnamt"),
             )
-            .values("cusip", "nameOfIssuer", "total", "percentage", "sshPrnamt")
+            .values(
+                "cusip", "nameOfIssuer", "total", "percentage", "sshPrnamt"
+            )
             .order_by("-total")
         )
 
@@ -410,11 +433,13 @@ class CikViewSet(viewsets.ViewSet):
             )
 
         if sorting := request.GET.get("sorting"):
-            portfolio_holdings_by_value = portfolio_holdings_by_value.order_by(sorting)
+            portfolio_holdings_by_value = portfolio_holdings_by_value.order_by(
+                sorting
+            )
 
         self.paginator.default_limit = portfolio_holdings_by_value.count()
 
-        if chart := request.GET.get("chart"):
+        if chart := request.GET.get("chart"):  # noqa
             print("there is a chart param")
             portfolio_holdings_by_value = portfolio_holdings_by_value[:100]
 
@@ -424,7 +449,9 @@ class CikViewSet(viewsets.ViewSet):
 
         serializer = PortfolioByPeriodSerializer(
             result_page,
-            context={"previous_period": previous_period_portfolio_holdings_by_value},
+            context={
+                "previous_period": previous_period_portfolio_holdings_by_value
+            },
             many=True,
         )
 
@@ -446,12 +473,7 @@ def portfolio_summary(request, cik, **kwargs):
         total_holdings=Count("cusip", distinct=False),
         unique_cusips=Count("cusip", distinct=True),
     )
-    return Response(
-        {
-            "company_name": cik.filer_name,
-            "summary": summary,
-        }
-    )
+    return Response({"company_name": cik.filer_name, "summary": summary})
 
 
 @cache_page(60 * 15)
@@ -464,9 +486,9 @@ def funds_scatterplot(request, **kwargs):
 
 @api_view(["GET"])
 def dashboard(request):
-    holdings_total = Holding.objects.aggregate(holdings_total=Sum("value")).get(
-        "holdings_total"
-    )
+    holdings_total = Holding.objects.aggregate(
+        holdings_total=Sum("value")
+    ).get("holdings_total")
     filing_count = Filing.objects.all().count()
 
     average_holding_value = holdings_total / Holding.objects.all().count()

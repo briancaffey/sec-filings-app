@@ -17,7 +17,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RequestLog',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('date', models.DateTimeField(auto_now_add=True)),
                 ('path', models.CharField(max_length=3000)),
                 ('full_path', models.CharField(max_length=3000)),
@@ -25,7 +33,15 @@ class Migration(migrations.Migration):
                 ('response_code', models.PositiveIntegerField()),
                 ('method', models.CharField(max_length=10, null=True)),
                 ('remote_address', models.CharField(max_length=20, null=True)),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                (
+                    'user',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

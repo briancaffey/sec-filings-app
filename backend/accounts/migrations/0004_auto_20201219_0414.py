@@ -14,22 +14,35 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Subscription',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('stripe_customer_id', models.CharField(blank=True, max_length=1000, null=True)),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'stripe_customer_id',
+                    models.CharField(blank=True, max_length=1000, null=True),
+                ),
                 ('valid_through', models.DateTimeField(blank=True, null=True)),
             ],
         ),
         migrations.RemoveField(
-            model_name='customuser',
-            name='stripe_customer_id',
+            model_name='customuser', name='stripe_customer_id',
         ),
         migrations.RemoveField(
-            model_name='customuser',
-            name='subscription_valid_through',
+            model_name='customuser', name='subscription_valid_through',
         ),
         migrations.AddField(
             model_name='customuser',
             name='subscription',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='accounts.subscription'),
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='accounts.subscription',
+            ),
         ),
     ]

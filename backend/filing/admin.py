@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.core.management import call_command
 from django.utils.html import format_html
-from django.db import models
 from django.http import HttpResponseRedirect
 
 from django.urls import path
@@ -80,7 +79,9 @@ class FilingListAdmin(admin.ModelAdmin):
     def generate_filing_lists(self, request):
 
         call_command("generate_filing_lists")
-        self.message_user(request, "Filing lists have been generated (1993 - 2020).")
+        self.message_user(
+            request, "Filing lists have been generated (1993 - 2020)."
+        )
 
         return HttpResponseRedirect("../")
 
@@ -117,14 +118,14 @@ class FilingAdmin(admin.ModelAdmin):
 
     def holding_count(self, obj=None):
         return format_html(
-            f"<a href='/admin/filing/holding/?filing__id={obj.id}'>{obj.holding_count()}</a>"
+            f"<a href='/admin/filing/holding/?filing__id={obj.id}'>{obj.holding_count()}</a>"  # noqa
         )
 
     holding_count.admin_order_field = "holdingcount"
 
     def filing_list_link(self, obj=None):
         return format_html(
-            f'<a target="_blank" href="/admin/filing/filinglist/{obj.filing_list.id}/change/">{str(obj.filing_list)}</a>'
+            f'<a target="_blank" href="/admin/filing/filinglist/{obj.filing_list.id}/change/">{str(obj.filing_list)}</a>'  # noqa
         )
 
     change_form_template = "admin/filing/filing/change_form.html"
@@ -143,7 +144,12 @@ class HoldingAdmin(admin.ModelAdmin):
 
     # raw_id_fields = ["filing"]
 
-    list_select_related = ("filing", "cusip", "filing__cik", "filing__filing_list")
+    list_select_related = (
+        "filing",
+        "cusip",
+        "filing__cik",
+        "filing__filing_list",
+    )
 
     readonly_fields = ("filing",)
     list_display = (
@@ -168,7 +174,7 @@ class HoldingAdmin(admin.ModelAdmin):
 
     def cik(self, obj=None):
         return format_html(
-            f'<a target="_blank" href="/cik/{obj.filing.cik}">{obj.filing.cik}</a>'
+            f'<a target="_blank" href="/cik/{obj.filing.cik}">{obj.filing.cik}</a>'  # noqa
         )
 
     def date_filed(self, obj=None):
@@ -179,10 +185,14 @@ class HoldingAdmin(admin.ModelAdmin):
 
     def filing_link(self, obj=None):
         return format_html(
-            f'<a target="_blank" href="/admin/filing/filing/{obj.filing.id}/change/">Link</a>'
+            f'<a target="_blank" href="/admin/filing/filing/{obj.filing.id}/change/">Link</a>'  # noqa
         )
 
-    search_fields = ("nameOfIssuer", "cusip__cusip_number", "cusip__company_name")
+    search_fields = (
+        "nameOfIssuer",
+        "cusip__cusip_number",
+        "cusip__company_name",
+    )
 
 
 admin.site.register(Holding, HoldingAdmin)

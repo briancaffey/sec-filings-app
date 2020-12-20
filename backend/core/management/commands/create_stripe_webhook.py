@@ -1,12 +1,9 @@
-import datetime
 import logging
 import os
 
 
 import stripe
 from django.core.management.base import BaseCommand
-
-from filing.models import FilingList
 
 logger = logging.getLogger("django")
 logger.setLevel(logging.INFO)
@@ -22,7 +19,7 @@ class Command(BaseCommand):
         This is only used in production. In development, use:
             stripe listen --forward-to localhost/api/stripe-webhooks/
 
-        Once the webhook is create, STRIPE_WEBHOOK_SECRET needs to be added 
+        Once the webhook is create, STRIPE_WEBHOOK_SECRET needs to be added
         to environment variables
         """
 
@@ -30,7 +27,7 @@ class Command(BaseCommand):
 
         stripe.WebhookEndpoint.create(
             url="https://opensecdata.ga/api/stripe-webhooks/",
-            enabled_events=["*",],
+            enabled_events=["*"],
         )
 
         logger.info("Created Stripe Webhook")

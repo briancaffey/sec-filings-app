@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path
 
 from . import views
 
@@ -20,7 +20,9 @@ urlpatterns = [
         name="cik-list",
     ),
     path(
-        "cusip/", views.CusipViewSet.as_view({"get": "cusip_list"}), name="cusip-list"
+        "cusip/",
+        views.CusipViewSet.as_view({"get": "cusip_list"}),
+        name="cusip-list",
     ),
     path(
         "cusip/<str:cusip>/historical/",

@@ -2,7 +2,7 @@ import logging
 import json
 
 from django.conf import settings
-from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
@@ -10,13 +10,11 @@ from django.views.decorators.http import require_POST
 # to be used for social authentication with python social auth
 from requests.exceptions import HTTPError
 
-from rest_framework import permissions, serializers, status, viewsets
+from rest_framework import permissions, serializers, status
 from rest_framework.authtoken.models import Token
-from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.decorators import (
     api_view,
     permission_classes,
-    authentication_classes,
 )
 
 from rest_framework.permissions import AllowAny
@@ -28,13 +26,9 @@ from social_django.utils import psa
 from .serializers import UserSerializer
 from .utils.social.oauth import get_access_token_from_code
 
-# User = get_user_model()
-
-
-from django.shortcuts import render
-
 logger = logging.getLogger("django")
 logger.setLevel(logging.INFO)
+
 
 # Create your views here.
 class Profile(APIView):
@@ -93,7 +87,7 @@ def request_api_token(request):
         return Response({"token": token.key})
 
     else:
-        tokens = Token.objects.filter(user=user).delete()
+        Token.objects.filter(user=user).delete()
         return Response({"detail": "All of your tokens have been deleted"})
 
 

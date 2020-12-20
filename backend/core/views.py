@@ -4,14 +4,10 @@ import logging
 import os
 
 
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import AnonymousUser
-from django.shortcuts import render
-from django.utils.timezone import make_aware
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -28,6 +24,7 @@ TWO_DAYS = 60 * 60 * 24 * 2
 
 logger = logging.getLogger("django")
 logger.setLevel(logging.INFO)
+
 
 # Create your views here.
 def health_check(request):
@@ -49,9 +46,11 @@ def stripe_webhooks(request):
         )
         data = event["data"]
     except ValueError as e:
+        logger.info(e)
         # Invalid payload
         return HttpResponse(status=400)
     except stripe.error.SignatureVerificationError as e:
+        logger.info(e)
         # Invalid signature
         return HttpResponse(status=400)
 
@@ -119,13 +118,14 @@ def create_subscription(request):
 
     try:
 
-        logger.info(f"Creating Stripe Customer")
+        logger.info("Creating Stripe Customer")
         stripe_customer = stripe.Customer.create(email=request.user.email)
-        logger.info(f"Stripe Customer created")
+        logger.info("Stripe Customer created")
         if "id" in stripe_customer:
             stripe_customer_id = stripe_customer["id"]
         else:
-            # what happens if Customer.create is called with an email that already exists?
+            # what happens if Customer.create is called with
+            # an email that already exists?
             return JsonResponse({"message": "Error creating Stripe Customer"})
 
         # Attach the payment method to the customer

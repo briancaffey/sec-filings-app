@@ -1,7 +1,6 @@
 import datetime
 import io
 import logging
-import time
 import urllib.request
 import zipfile
 
@@ -30,9 +29,6 @@ def process_filing_list(filing_list_id):
 
     Cik = apps.get_model("filing", "Cik")
     CikObservation = apps.get_model("filing", "CikObservation")
-
-    Cusip = apps.get_model("filing", "Cusip")
-    CusipObservation = apps.get_model("filing", "CusipObservation")
 
     filing_list = FilingList.objects.get(pk=filing_list_id)
 
@@ -77,7 +73,9 @@ def process_filing_list(filing_list_id):
         filing_record = Filing(
             cik=cik,  # this uses the model created above
             form_type=filing.form_type,
-            date_filed=datetime.datetime.strptime(filing.date_filed, "%Y-%m-%d"),
+            date_filed=datetime.datetime.strptime(
+                filing.date_filed, "%Y-%m-%d"
+            ),
             filename=filing.filename,
             filing_list=filing_list,
         )
@@ -96,7 +94,8 @@ def process_filing(filing_id):
     """
     Process a filing
 
-    The actual file will not exist, so we will need to download it before processing
+    The actual file will not exist, so we will need to
+    download it before processing
 
     this function:
 
@@ -138,7 +137,9 @@ def process_fails_to_deliver_data_file(url):
                     if True:
                         cusip_number = data[1]
                         symbol = data[2]
-                        cusip = Cusip.objects.filter(cusip_number=cusip_number).first()
+                        cusip = Cusip.objects.filter(
+                            cusip_number=cusip_number
+                        ).first()
                         if cusip:
                             cusip.symbol = symbol
                             cusip.save()

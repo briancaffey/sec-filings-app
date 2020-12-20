@@ -4,7 +4,7 @@ from filing.tasks import process_fails_to_deliver_data_file
 
 
 class Command(BaseCommand):
-    help = "Generates all filing lists from 1993 to present, but doesn't download files"
+    help = "Add stock tickers to CUSIP data"
 
     def handle(self, *args, **options):
         years = ["2017", "2018", "2019", "2020"]

@@ -5,7 +5,7 @@ from filing.models import FilingList
 
 
 class Command(BaseCommand):
-    help = "Generates all filing lists from 1993 to present, but doesn't download files"
+    help = "Generates all filing lists from 1993 to present, but doesn't download files"  # noqa
 
     def handle(self, *args, **options):
         month_mapping = {1: 1, 2: 4, 3: 7, 4: 10}
