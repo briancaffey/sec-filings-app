@@ -17,7 +17,7 @@ GENERIC_REDIS = redis.StrictRedis(host="redis", port="6379", db=6)  # noqa
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'ci',
+        'NAME': None,
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': 'postgres',
