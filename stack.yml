@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   postgres:
-    image: postgres
+    image: postgres:13.1
     networks:
       - main
     environment:
@@ -11,7 +11,7 @@ services:
       - osdpgdata:/var/lib/postgresql/data
 
   redis:
-    image: redis:alpine
+    image: redis:6.0.9-alpine
     volumes:
       - osdredisdata:/data
     networks:

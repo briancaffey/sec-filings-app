@@ -1,4 +1,5 @@
 stages:
+  - test
   - build
   - deploy
   - management
@@ -11,6 +12,25 @@ workflow:
 image: docker:19.03.1
 services:
   - docker:19.03.5-dind
+
+Pytest:
+  image: python:3.8
+  stage: test
+  services:
+    - postgres:13.1
+    - redis:6.0.9-alpine
+  variables:
+    DJANGO_SETTINGS_MODULE: "backend.settings.gitlab_ci"
+    SECRET_KEY: "secret"
+    DEBUG: "True"
+  script:
+    - cd backend
+    - pip install -r requirements/base.txt
+    - pip install -r requirements/test.txt
+    - flake8
+    - black -l 79 -S --diff .
+    - pytest --cov --cov-config=.coveragerc
+  coverage: '/TOTAL.+ ([0-9]{1,3}\.[0-9]{1,3}%)/'
 
 .add-ssh-key: &add-ssh-key
   before_script:

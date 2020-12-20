@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   postgres:
-    container_name: postgres
+    container_name: postgres:13.1
     image: postgres:11.5
     networks:
       - main
@@ -14,7 +14,7 @@ services:
       - POSTGRES_PASSWORD=postgres
 
   redis:
-    image: redis:alpine
+    image: redis:6.0.9-alpine
     volumes:
       - redis-data:/data
     container_name: redis

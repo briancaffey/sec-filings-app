@@ -114,7 +114,9 @@ def create_subscription(request):
 
     data = request.data
 
-    price_id = 'price_1Hx0goL67dRDwyuDh9yEWsBo'  # TODO: don't hardcode
+    # run the `create_stripe_data` management command and get the price_id
+    # from the Stripe console and add it to `.env` as SUBSCRIPTION_PRICE_ID
+    price_id = os.environ.get("SUBSCRIPTION_PRICE_ID", "price_abc124")
 
     try:
 

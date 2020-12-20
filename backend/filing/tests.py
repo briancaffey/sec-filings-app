@@ -148,6 +148,7 @@ def test_get_previous_filing_list():
     assert filing_q0.previous_filing_list() == None  # noqa
 
 
+@pytest.mark.skip(reason="Need to rewrite pricing delta logic")
 @pytest.mark.django_db(transaction=True)
 # @override_settings(DEBUG=False)
 def test_previous_filing_deltas():
@@ -181,8 +182,11 @@ def test_previous_filing_deltas():
     )
 
     client = APIClient()
-    url = reverse("portfolio-period", kwargs={"cik": cik.cik_number})
-    resp = client.get(url, data={"period": "2021-04-01"})
+    url = reverse(
+        "portfolio-period",
+        kwargs={"cik": cik.cik_number, "period": "2021-04-01"},
+    )
+    resp = client.get(url)
     assert resp.data["results"][0]["percentage"] == 1
     assert float(resp.data["results"][0]["delta_values"]["total"]) == 0.2
     assert resp.status_code == 200
@@ -207,7 +211,7 @@ def test_fund_scatterplot_endpoint():
         filing=filing_0, cusip=cusip_1, value=200, sshPrnamt=200
     )
     client = APIClient()
-    url = f"{reverse('fund-scatterplot')}?period=2020-10-01"
+    url = f"{reverse('fund-scatterplot', kwargs={'period': '2020-10-01'},)}"  # noqa
     resp = client.get(url)
 
     assert len(resp.data) == 1
