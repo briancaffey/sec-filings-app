@@ -4,10 +4,10 @@ stages:
   - deploy
   - management
 
-workflow:
-  rules:
-    - if: "$CI_COMMIT_TAG =~ /^rc/"
-      when: always
+# jobs for build, deploy and management are in these included files
+include:
+  - local: /gitlab-ci/do-base.yml
+  - local: "/gitlab-ci/dev.yml"
 
 image: docker:19.03.1
 services:
@@ -31,80 +31,3 @@ Pytest:
     - black -l 79 -S --diff .
     - pytest --cov --cov-config=.coveragerc
   coverage: '/TOTAL.+ ([0-9]{1,3}\.[0-9]{1,3}%)/'
-
-.add-ssh-key: &add-ssh-key
-  before_script:
-    - apk update && apk add openssh-client bash
-    - mkdir -p ~/.ssh
-    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
-    - eval "$(ssh-agent -s)"
-    - ssh-add ~/.ssh/id_rsa
-    - ssh-keyscan -H $DROPLET_IP >> ~/.ssh/known_hosts
-    - docker login -u gitlab-ci-token -p $READ_REGISTRY_TOKEN $CI_REGISTRY
-
-build-backend:
-  stage: build
-  before_script:
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  script:
-    - |
-      docker build \
-        --build-arg LINKEDIN_OAUTH2_KEY=${LINKEDIN_OAUTH2_KEY} \
-        --build-arg LINKEDIN_OAUTH2_SECRET=${LINKEDIN_OAUTH2_SECRET} \
-        --build-arg STRIPE_API_KEY=${STRIPE_API_KEY} \
-        --build-arg DOMAIN_NAME=${DOMAIN_NAME} \
-        -t $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA \
-        -f backend/docker/Dockerfile.prod \
-        ./backend/
-    - docker push $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA
-
-build-nginx:
-  stage: build
-  before_script:
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  script:
-    - |
-      docker build \
-        --build-arg LINKEDIN_OAUTH2_KEY=${LINKEDIN_OAUTH2_KEY} \
-        --build-arg STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY} \
-        -t $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_SHORT_SHA \
-        -f nginx/prod/Dockerfile \
-        .
-    - docker push $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_SHORT_SHA
-
-docker-stack-deploy:
-  <<: *add-ssh-key
-  rules:
-    - if: $CI_COMMIT_TAG
-  stage: deploy
-  variables:
-    DOCKER_HOST: "ssh://root@$DROPLET_IP"
-  script:
-    - docker stack deploy --with-registry-auth -c stack.yml my-stack
-
-.task-base: &task-base
-  <<: *add-ssh-key
-  stage: management
-  variables:
-    DOCKER_HOST: "ssh://root@$DROPLET_IP"
-  rules:
-    - when: manual
-
-django-collectstatic:
-  <<: *task-base
-  script:
-    - ssh root@$DROPLET_IP \
-      'docker exec $(docker ps -q -f name="backend") python3 manage.py collectstatic --no-input'
-
-django-migrate:
-  <<: *task-base
-  script:
-    - ssh root@$DROPLET_IP \
-      'docker exec $(docker ps -q -f name="backend") python3 manage.py migrate --no-input'
-
-django-createsuperuser:
-  <<: *task-base
-  script:
-    - ssh root@$DROPLET_IP \
-      'docker exec $(docker ps -q -f name="backend") python3 manage.py createsuperuser --no-input'

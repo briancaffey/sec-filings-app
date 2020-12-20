@@ -1,0 +1,39 @@
+.base_dev_env: &base_dev_env
+  variables:
+    ENVIRONMENT: dev
+
+.workflow_dev: &dev_settings
+  <<: *base_dev_env
+  rules:
+    - if: "$CI_COMMIT_TAG =~ /^rc/"
+      when: always
+
+.manual_job_dev: &manual_dev_settings
+  <<: *base_dev_env
+  rules:
+    - if: "$CI_COMMIT_TAG =~ /^rc/"
+      when: manual
+
+build_nginx (dev):
+  <<: *dev_settings
+  extends: .build-nginx
+
+build_backend (dev):
+  <<: *dev_settings
+  extends: .build-backend
+
+docker_stack_deploy (dev):
+  <<: *dev_settings
+  extends: .docker-stack-deploy
+
+collectstatic (dev):
+  <<: *manual_dev_settings
+  extends: .django-collectstatic
+
+migrate (dev):
+  <<: *manual_dev_settings
+  extends: .django-migrate
+
+createsuperuser (dev):
+  <<: *manual_dev_settings
+  extends: .django-createsuperuser
