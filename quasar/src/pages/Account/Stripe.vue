@@ -31,31 +31,18 @@ let stripe = Stripe(process.env.STRIPE_PUBLISHABLE_KEY),
   card = undefined;
 
 export default {
-  data() {
-    return {
-      stripeCustomerId: null
-    };
-  },
-  created() {
-    this.$axios.post("/api/stripe/create-customer/").then(resp => {
-      console.log("stripe user created");
-      this.stripeCustomerId = resp.data.stripe_customer_id;
-    });
-  },
   mounted: function() {
     card = elements.create("card", { style });
     card.mount(this.$refs.card);
   },
   methods: {
-    createSubscription({ customerId, paymentMethodId, priceId }) {
+    createSubscription({ paymentMethodId }) {
       return (
         this.$axios
           .post(
             "/api/stripe/create-subscription/",
             {
-              customerId: customerId,
-              paymentMethodId: paymentMethodId,
-              priceId: priceId
+              paymentMethodId: paymentMethodId
             },
             {
               headers: {
@@ -64,6 +51,8 @@ export default {
             }
           )
           .then(response => {
+            this.$router.push("/account");
+            this.$q.notify("Your premium subscription is now active.");
             return response;
           })
           // If the card is declined, display an error to the user.
@@ -79,7 +68,6 @@ export default {
           .then(result => {
             return {
               paymentMethodId: paymentMethodId,
-              priceId: priceId,
               subscription: result
             };
           })
@@ -109,12 +97,9 @@ export default {
         .then(result => {
           if (result.error) {
             console.log(result);
-            alert(result);
           } else {
             this.createSubscription({
-              customerId: this.stripeCustomerId,
-              paymentMethodId: result.paymentMethod.id,
-              priceId: "price_1Hx0goL67dRDwyuDh9yEWsBo"
+              paymentMethodId: result.paymentMethod.id
             });
           }
         });

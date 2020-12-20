@@ -11,6 +11,7 @@ import investors from "./modules/investors";
 import securities from "./modules/securities";
 import cusip from "./modules/cusip/";
 import auth from "./modules/auth";
+import user from "./modules/user";
 
 Vue.use(Vuex);
 
@@ -35,7 +36,8 @@ export default function(/* { ssrContext } */) {
       investors,
       securities,
       cusip,
-      auth
+      auth,
+      user
     },
 
     // enable strict mode (adds overhead!)

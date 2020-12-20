@@ -1,4 +1,4 @@
-# Notes on Integrating Stripe for Processing Payments
+# Using the Stripe API in a Django application for processing recurring subscription payments
 
 This application will offer a premium subscription service that users can pay for with Stripe. Premium subscriptions will give users unlimited access to the API as well as access to certain parts of the web UI that regular users do not have access to.
 
@@ -30,28 +30,30 @@ Once we have setup the account, we will want to add the `test` API keys to our `
 
 ## High-level Overview
 
-Here's a high level overview of what we need to setup recurring billing for our users: 
+Here's a high level overview of what we need to setup recurring billing for our users:
 
 ### Stripe account
 
-1. A Stripe account with a business setup in Stripe. 
+1. A Stripe account with a business setup in Stripe.
 1. test API keys in local development (publishable key in frontend, secret key on backend)
 1. live API keys in GitLab secrets, .gitlab-ci.yml, Dockerfiles and `docker build` commands as `--build-arg`s
 
 ### Backend
 
 1. `stripe` package installed from PyPI
-1. `stripe listen --forward-to localhost/api/stripe-webhooks/` command running using CLI (the key shown in the output of this command must be added to the `STRIPE_WEBHOOK_SECRET`)
+1. `stripe listen --forward-to localhost/api/stripe-webhooks/` command running using CLI (the key shown in the output of this command must be added as the `STRIPE_WEBHOOK_SECRET`)
 1. django management command to create webhook used in production using webhook API.
 1. django management command to create prices and products
+1. save the price_id of the subscription
 1. `dj-stripe` to sync Stripe data with Django models
 1. endpoint for Stripe webhooks to listen for events that happen (this can be used with dj-stripe)
 1. endpoint for `create_subscription`
+1. endpoint for `cancel_subscription`
 
 ### Frontend
 
 1. Add stripe via CDN to `index.html`: `<script src="https://js.stripe.com/v3/"></script>`
-1. Add a `Stripe.vue` component 
+1. Add a `Stripe.vue` component
 
 ### Frontend `Stripe.vue` component
 
@@ -59,8 +61,8 @@ Here's a high level overview of what we need to setup recurring billing for our 
 1. Define `elements` as `stripe.elements()`
 1. In the mounted hook, create and mount the `card` variable
 1. Define a `purchase` function that is called on a button click when card information is filled out and the customer is ready to purhcase
-1. Inside the `purchase` function, call `stripe.createPaymentMethod` that takes in the `card` information. 
-1. When `stripe.createPaymentMethod` completes, call our custom `createSubscription` function. 
+1. Inside the `purchase` function, call `stripe.createPaymentMethod` that takes in the `card` information.
+1. When `stripe.createPaymentMethod` completes, call our custom `createSubscription` function.
 1. Alternatively, use a package like [https://www.npmjs.com/package/vue-stripe-elements-plus](https://www.npmjs.com/package/vue-stripe-elements-plus) to simplify some of the logic
 
 ### `createSubscription` function
@@ -75,20 +77,20 @@ Here's a high level overview of what we need to setup recurring billing for our 
 1. Attach the payment method to the customer with `stripe.PaymentMethod.attach`
 1. Set the default payment method on the customer with `stripe.Customer.modify`
 1. Create the subscription with `stripe.Subscription.create`
-1. Finally, this view returns the results of `stripe.Subscription.create` (`JsonResponse(subscription)`). 
+1. Finally, this view returns the results of `stripe.Subscription.create` (`JsonResponse(subscription)`).
 1. We may want to save additional information from the `subscription` on our User model, such as the expiration date, or update a `subscription_status` flag for checking permissions when accessing gated resources.
 
 ### Webhooks for subscription renewal
 
+1. When an event with type `invoice.paid` is sent to the webhook, update the `valid_through` field on our `Subscription` (Django) model.
+
 ### Cancelling a subscription
 
-## Questions
+1. Setup and endpoint for `cancel_subscription`
+1. Call `stripe.Subscription.delete` in this endpoint
+1. Delete the Django model subscription with `request.user.subscription.delete()`
 
-1. Would `PaymentIntent` be appropriate to use here? I'm still not sure how this should be used. 
-1. When does the Webhook come into play?
-1. What happens when a subscription is renewed? Is the webhook used for this? Information on a user's subscription status should be updated if a payment fails.
-1. [https://stripe.com/docs/billing/subscriptions/webhooks](https://stripe.com/docs/billing/subscriptions/webhooks)
+## TODO
 
-> Stripe sends notifications to your app using webhooks. Although webhooks can be used for many purposes, they are especially important when using subscriptions, where most activity occurs asynchronously.
-
-See [https://stripe.com/docs/billing/subscriptions/webhooks#common-uses](https://stripe.com/docs/billing/subscriptions/webhooks#common-uses)
+- Test subscription renewals
+- Figure out how to test things in CI, how to mock stripe library calls

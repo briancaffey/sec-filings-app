@@ -13,10 +13,10 @@ class CustomUser(AbstractUser):
 
     username = None
     email = models.EmailField(_("email address"), unique=True)
-    stripe_customer_id = models.CharField(
-        max_length=1000, blank=True, null=True
+
+    subscription = models.ForeignKey(
+        "Subscription", null=True, on_delete=models.SET_NULL
     )
-    subscription_valid_through = models.DateTimeField(null=True, blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -27,4 +27,23 @@ class CustomUser(AbstractUser):
         return self.email
 
     def is_premium(self):
-        return self.subscription_valid_through > timezone.now()
+        if self.subscription is not None:
+            return self.subscription.valid_through > timezone.now()
+        return False
+
+
+class Subscription(models.Model):
+    stripe_subscription_id = models.CharField(
+        max_length=1000, blank=True, null=True
+    )
+    stripe_customer_id = models.CharField(
+        max_length=1000, blank=True, null=True
+    )
+    valid_through = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        user = CustomUser.objects.filter(subscription=self).first()
+        if user:
+            return f"{str(user)} ({self.stripe_subscription_id})"
+        else:
+            return "No subscription"

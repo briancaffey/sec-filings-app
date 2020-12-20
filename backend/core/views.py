@@ -5,6 +5,7 @@ import os
 
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -16,7 +17,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 import stripe
 
+from accounts.models import Subscription
+
+User = get_user_model()
+
 stripe.api_key = os.environ.get("STRIPE_API_KEY")
+
+# two days in seconds
+TWO_DAYS = 60 * 60 * 24 * 2
 
 logger = logging.getLogger("django")
 logger.setLevel(logging.INFO)
@@ -58,6 +66,24 @@ def stripe_webhooks(request):
     if event_type == "product.deleted":
         logger.info("Product deleted successfully")
 
+    if event_type == "invoice.paid":
+        logger.info("Subscription invoice was paid")
+        logger.info("Updating subscription...")
+
+        # data.object is an invoice for events of type `invoice.paid`
+        # We need to get the subscription id from this data object,
+        # then update the valid_through date for this subscription
+        subscription_id = data_object["lines"]["data"][0]["subscription"]
+        current_period_end = data_object["lines"]["data"][0][
+            "current_period_end"
+        ]
+        subscription = Subscription.objects.get(
+            stripe_subscription_id=subscription_id
+        )
+        subscription.valid_through = current_period_end + TWO_DAYS
+        subscription.save()
+        logger.info("Subscription updated")
+
     logger.info("Finished processing Stripe Webhook")
 
     return HttpResponse(status=200)
@@ -65,54 +91,86 @@ def stripe_webhooks(request):
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def create_stripe_customer(request):
-    stripe_customer_id = request.user.stripe_customer_id
+def cancel_subscription(request):
+    try:
+        # Cancel the subscription by deleting it
+        logger.info("Cancelling subscription")
 
-    if not stripe_customer_id:
-        logger.info(f"Creating Stripe User with email: {request.user.email}")
-        stripe_customer = stripe.Customer.create(email=request.user.email)
-        stripe_customer_id = stripe_customer["id"]
-        user = request.user
-        user.stripe_customer_id = stripe_customer_id
-        logger.info("Saving stripe_customer_id to current user")
-        user.save()
+        # delete the subscription in Stripe
+        logger.info("Cancelling subscription in Stripe")
+        deleted_subscription = stripe.Subscription.delete(
+            request.data['subscriptionId']
+        )
 
-    return Response({"stripe_customer_id": stripe_customer_id})
+        logger.info("Deleting subscription on user model")
+        request.user.subscription.delete()
+        return Response(deleted_subscription)
+    except Exception as e:
+        return Response({"message": str(e)})
 
 
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def create_subscription(request):
 
-    data = json.loads(request.body)
+    data = request.data
+
+    price_id = 'price_1Hx0goL67dRDwyuDh9yEWsBo'  # TODO: don't hardcode
 
     try:
+
+        logger.info(f"Creating Stripe Customer")
+        stripe_customer = stripe.Customer.create(email=request.user.email)
+        logger.info(f"Stripe Customer created")
+        if "id" in stripe_customer:
+            stripe_customer_id = stripe_customer["id"]
+        else:
+            # what happens if Customer.create is called with an email that already exists?
+            return JsonResponse({"message": "Error creating Stripe Customer"})
+
         # Attach the payment method to the customer
+        logger.info("Attaching payment info to customer")
         stripe.PaymentMethod.attach(
-            data["paymentMethodId"], customer=data["customerId"],
+            data["paymentMethodId"], customer=stripe_customer_id,
         )
+
         # Set the default payment method on the customer
+        logger.info("Setting default payment method for customer")
         stripe.Customer.modify(
-            data["customerId"],
+            stripe_customer_id,
             invoice_settings={
                 "default_payment_method": data["paymentMethodId"],
             },
         )
 
         # Create the subscription
-        subscription = stripe.Subscription.create(
-            customer=data["customerId"],
-            items=[{"price": data["priceId"]}],
+        logger.info("Creating Stripe Subscription")
+        stripe_subscription = stripe.Subscription.create(
+            customer=stripe_customer_id,
+            items=[{"price": price_id}],
             expand=["latest_invoice.payment_intent"],
         )
 
+        # save the subscription to the user
         user = request.user
-        current_period_end = subscription["current_period_end"]
-        user.subscription_valid_through = make_aware(
-            datetime.fromtimestamp(current_period_end)
+
+        logger.info("Creating Subscription (Django object)")
+        subscription_object = Subscription(
+            stripe_customer_id=stripe_customer_id,
+            # leave a grace period of a few days before cancelling subscription
+            valid_through=datetime.fromtimestamp(
+                stripe_subscription["current_period_end"]
+                + TWO_DAYS  # two days in seconds
+            ),
+            stripe_subscription_id=stripe_subscription["id"],
         )
 
+        logger.info("Save subscription model")
+        subscription_object.save()
+        logger.info("Save subscription model to user")
+        user.subscription = subscription_object
         user.save()
 
-        return JsonResponse(subscription)
+        return Response(stripe_subscription)
     except Exception as e:
-        return JsonResponse({"message": str(e)})
-
+        return Response({"message": str(e)})

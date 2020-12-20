@@ -2,13 +2,11 @@ import Vue from "vue";
 
 const state = {
   accountStatus: {
-    id: null,
     email: null,
     is_staff: null,
     is_superuser: null,
     stripe_customer_id: null,
-    subscription_valid_through: null,
-    is_premium: null
+    subscription: {}
   }
 };
 
@@ -17,10 +15,16 @@ const getters = {
 };
 
 const actions = {
-  fetchData: ({ commit, dispatch }, payload) => {
-    Vue.prototype.$axios.post("/api/account/", payload).then(resp => {
-      commit("setAccount", resp);
-    });
+  fetchData: ({ commit }, payload) => {
+    Vue.prototype.$axios
+      .get("/api/account/", payload)
+      .then(resp => {
+        commit("setAccount", resp);
+      })
+      .catch(() => {
+        // the user is not logged in
+        console.log("user is not logged in");
+      });
   }
 };
 

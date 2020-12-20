@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import CustomUserChangeForm, CustomUserCreationForm
-from .models import CustomUser
+from .models import CustomUser, Subscription
 
 
 class CustomUserAdmin(UserAdmin):
@@ -27,11 +27,9 @@ class CustomUserAdmin(UserAdmin):
             "Permissions",
             {"fields": ("is_staff", "is_active", "is_superuser")},
         ),
-        (
-            "Stripe",
-            {"fields": ("stripe_customer_id", "subscription_valid_through"),},
-        ),
+        ("Stripe", {"fields": ("subscription",),},),  # noqa
     )
+    readonly_fields = ('subscription',)
     add_fieldsets = (
         (
             None,
@@ -52,4 +50,13 @@ class CustomUserAdmin(UserAdmin):
     ordering = ("email",)
 
 
+class SubscriptionAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Subscription
+
+    fields = ("valid_through", "stripe_customer_id", "stripe_subscription_id")
+    list_display = fields
+
+
 admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(Subscription, SubscriptionAdmin)

@@ -11,8 +11,8 @@ urlpatterns = [
         name="stripe-create-subscription",
     ),
     path(
-        "stripe/create-customer/",
-        views.create_stripe_customer,
-        name="stripe-create-customer",
+        "stripe/cancel-subscription/",
+        views.cancel_subscription,
+        name="stripe-cancel-subscription",
     ),
 ]
