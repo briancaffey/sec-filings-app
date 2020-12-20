@@ -22,7 +22,7 @@ Pytest:
   variables:
     DJANGO_SETTINGS_MODULE: "backend.settings.gitlab_ci"
     SECRET_KEY: "secret"
-    DEBUG: "True"
+    DEBUG: "1"
     POSTGRES_HOST_AUTH_METHOD: trust
   script:
     - cd backend
