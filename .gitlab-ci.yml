@@ -23,6 +23,7 @@ Pytest:
     DJANGO_SETTINGS_MODULE: "backend.settings.gitlab_ci"
     SECRET_KEY: "secret"
     DEBUG: "True"
+    POSTGRES_HOST_AUTH_METHOD: trust
   script:
     - cd backend
     - pip install -r requirements/base.txt
