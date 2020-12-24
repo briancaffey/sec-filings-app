@@ -96,6 +96,9 @@ def cancel_subscription(request):
         logger.info("Cancelling subscription")
 
         # delete the subscription in Stripe
+        # TODO: instead of passing the subscriptionId from the frontend,
+        # we can get it from the user's subscription
+        # the frontend doesn't need to know the user's subscriptionId
         logger.info("Cancelling subscription in Stripe")
         deleted_subscription = stripe.Subscription.delete(
             request.data['subscriptionId']
@@ -105,6 +108,7 @@ def cancel_subscription(request):
         request.user.subscription.delete()
         return Response(deleted_subscription)
     except Exception as e:
+        logger.info(e)
         return Response({"message": str(e)})
 
 

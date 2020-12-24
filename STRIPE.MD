@@ -82,7 +82,8 @@ Here's a high level overview of what we need to setup recurring billing for our 
 
 ### Webhooks for subscription renewal
 
-1. When an event with type `invoice.paid` is sent to the webhook, update the `valid_through` field on our `Subscription` (Django) model.
+1. An event with type `invoice.paid` is sent to the webhook,
+1. Get the update the `valid_through` field on our `Subscription` (Django) model.
 
 ### Cancelling a subscription
 
