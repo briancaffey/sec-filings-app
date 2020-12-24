@@ -4,11 +4,9 @@ version: "3.4"
 
 services:
   postgres:
-    image: postgres
+    image: postgres:13.1
     networks:
       - main
-    # environment:
-    #   - POSTGRES_PASSWORD
     env_file:
       - .env
     volumes:

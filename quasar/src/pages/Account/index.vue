@@ -2,6 +2,31 @@
   <q-page padding>
     <h4>Account</h4>
     <q-card>
+      <q-card-section
+        v-if="$store.getters['user/getAccountStatus'].subscription"
+      >
+        <div class="text-h6">You have a Premium Subscription!</div>
+        <div>
+          Here are the details on your premium subscription:
+        </div>
+        <pre
+          >{{ $store.getters["user/getAccountStatus"] }}
+          </pre
+        >
+        <q-btn to="/premium" color="red">Cancel My Premium Subscription</q-btn>
+      </q-card-section>
+      <q-card-section v-else>
+        <div class="text-h6">Account Plan: Basic</div>
+        <div>
+          You currently have a basic account. Upgrade your account for unlimited
+          API access.
+          <pre
+            >{{ $store.getters["user/getAccountStatus"] }}
+          </pre>
+        </div>
+        <br />
+        <q-btn to="/premium">Purhcase Premium</q-btn>
+      </q-card-section>
       <q-card-section>
         <div class="text-h6">API Keys</div>
         <div>You can request API Keys to use in your own application.</div>
@@ -38,11 +63,15 @@
 <script>
 import { copyToClipboard } from "quasar";
 export default {
+  components: {},
   data() {
     return {
       token: null,
       copied: false
     };
+  },
+  created() {
+    this.$store.dispatch("user/fetchData");
   },
   methods: {
     copyTokenToClipboard() {

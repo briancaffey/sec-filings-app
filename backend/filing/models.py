@@ -2,7 +2,6 @@ import logging
 
 from django.apps import apps
 from django.db import models
-from django.db.models.signals import post_save
 
 from .tasks import process_filing_list
 
@@ -24,7 +23,9 @@ class FilingListManager(models.Manager):
 class CikObservation(models.Model):
     name = models.CharField(max_length=1000, blank=False, null=False)
     filing_list = models.ForeignKey(
-        "FilingList", related_name="filing_list_observation", on_delete=models.CASCADE
+        "FilingList",
+        related_name="filing_list_observation",
+        on_delete=models.CASCADE,
     )
 
     cik = models.ForeignKey(
@@ -66,8 +67,10 @@ class Cusip(models.Model):
 class FilingList(models.Model):
     """
     A quarterly file that contains all SEC listings
-    About 6000 filings of the 250,000 filings in this index file are 13F filings
-    Example filing index: https://www.sec.gov/Archives/edgar/full-index/2020/QTR1/master.idx
+    About 6000 filings of the 250,000 filings in this
+    index file are 13F filings
+    Example filing index:
+    https://www.sec.gov/Archives/edgar/full-index/2020/QTR1/master.idx
     All filing indexes: https://www.sec.gov/Archives/edgar/full-index/
     """
 
@@ -85,7 +88,9 @@ class FilingList(models.Model):
         return f"Filing List ({self.quarter})"
 
     def process_filing_list(self):
-        logger.info(f"Sending 'Process Filing List' task to celery for {self}.")
+        logger.info(
+            f"Sending 'Process Filing List' task to celery for {self}."
+        )
         process_filing_list.delay(self.id)
 
     def filing_count(self):
@@ -114,7 +119,12 @@ class FilingList(models.Model):
             )
             # .filter(fund_size__lte=100_000_000)
             # .filter(holding_count__lte=5000)
-            .values("fund_size", "holding_count", "cik__cik_number", "cik__filer_name")
+            .values(
+                "fund_size",
+                "holding_count",
+                "cik__cik_number",
+                "cik__filer_name",
+            )
             .order_by("-holding_count")
         )
 
@@ -132,13 +142,16 @@ class Filing(models.Model):
 
     """
     A 13F filing from EDGAR
-    e.g.: https://www.sec.gov/Archives/edgar/data/1000097/0001000097-20-000004.txt
+    e.g.:
+    https://www.sec.gov/Archives/edgar/data/1000097/0001000097-20-000004.txt
     """
 
     objects = FilingManager()
 
     # cik = models.CharField(max_length=100, blank=False, null=False)
-    cik = models.ForeignKey("Cik", related_name="filing_cik", on_delete=models.CASCADE)
+    cik = models.ForeignKey(
+        "Cik", related_name="filing_cik", on_delete=models.CASCADE
+    )
 
     form_type = models.CharField(max_length=100, blank=False, null=False)
 
@@ -153,7 +166,7 @@ class Filing(models.Model):
     )
 
     def __str__(self):
-        return f"{self.cik.filer_name} (Q{self.filing_list.filing_quarter}-{self.filing_list.filing_year})"
+        return f"{self.cik.filer_name} (Q{self.filing_list.filing_quarter}-{self.filing_list.filing_year})"  # noqa
 
     def delete_holdings(self):
         Holding.objects.filter(filing=self).delete()
@@ -175,45 +188,29 @@ class Holding(models.Model):
     nameOfIssuer = models.CharField(max_length=500, blank=True, null=True)
     titleOfClass = models.CharField(max_length=500, blank=True, null=True)
     # cusip_raw = models.CharField(max_length=500, blank=True, null=True)
-    cusip = models.ForeignKey("Cusip", related_name="cusip", on_delete=models.CASCADE)
+    cusip = models.ForeignKey(
+        "Cusip", related_name="cusip", on_delete=models.CASCADE
+    )
     value = models.DecimalField(
-        "value",
-        null=True,
-        blank=True,
-        max_digits=19,
-        decimal_places=2,
+        "value", null=True, blank=True, max_digits=19, decimal_places=2,
     )
     sshPrnamt = models.DecimalField(
-        "sshPrnamt",
-        null=True,
-        blank=True,
-        max_digits=19,
-        decimal_places=2,
+        "sshPrnamt", null=True, blank=True, max_digits=19, decimal_places=2,
     )
     sshPrnamtType = models.CharField(max_length=500, blank=True, null=True)
-    investmentDiscretion = models.CharField(max_length=500, blank=True, null=True)
+    investmentDiscretion = models.CharField(
+        max_length=500, blank=True, null=True
+    )
     putCall = models.CharField(max_length=500, blank=True, null=True)
     otherManager = models.CharField(max_length=500, blank=True, null=True)
     sole = models.DecimalField(
-        "sole",
-        null=True,
-        blank=True,
-        max_digits=19,
-        decimal_places=2,
+        "sole", null=True, blank=True, max_digits=19, decimal_places=2,
     )
     shared = models.DecimalField(
-        "shared",
-        null=True,
-        blank=True,
-        max_digits=19,
-        decimal_places=2,
+        "shared", null=True, blank=True, max_digits=19, decimal_places=2,
     )
     nonee = models.DecimalField(
-        "nonee",
-        null=True,
-        blank=True,
-        max_digits=19,
-        decimal_places=2,
+        "nonee", null=True, blank=True, max_digits=19, decimal_places=2,
     )
 
     class Meta:

@@ -1,0 +1,11 @@
+[run]
+omit =
+    backend/*
+    accounts/apps.py
+    manage.py
+    /*migrations/*
+source=
+    .
+
+[report]
+precision = 2

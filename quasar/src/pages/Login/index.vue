@@ -4,15 +4,6 @@
       <q-card class="card">
         <q-card-section>
           <div class="text-center q-pa-md q-gutter-md">
-            <!-- <q-btn round color="black">
-              <q-icon name="fab fa-google-plus-g" size="1.2rem" />
-            </q-btn>
-            <q-btn round color="black">
-              <q-icon name="fab fa-github" size="1.2rem" />
-            </q-btn>
-            <q-btn round color="black">
-              <q-icon name="fab fa-microsoft" size="1.2rem" />
-            </q-btn> -->
             <q-btn type="a" :href="buildUrl" class="full-width" color="black">
               <q-icon name="fab fa-linkedin" left size="1.2rem" />
               Sign in with LinkedIn
@@ -108,7 +99,12 @@ export default {
         .then(() => {
           if (redirect) {
             // TODO: redirect not working
-            vm.$router.push("/");
+            console.log("redirecting too...");
+            console.log(redirect);
+            vm.$router.push(redirect).catch(err => {
+              console.log("here");
+              console.log(err);
+            });
           } else {
             vm.$router.push("/");
           }

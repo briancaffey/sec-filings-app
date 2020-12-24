@@ -1,7 +1,6 @@
 import logging
 import time
 
-from django.contrib.auth.models import AnonymousUser
 from core.models import RequestLog
 
 logger = logging.getLogger("django")

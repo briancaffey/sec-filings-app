@@ -16,6 +16,8 @@ class RequestLogAdmin(admin.ModelAdmin):
 
     search_fields = ("full_path",)
 
+    list_select_related = ("user",)
+
     list_filter = ("method", "response_code", "user")
 
     readonly_fields = (

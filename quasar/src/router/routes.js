@@ -17,10 +17,17 @@ const routes = [
       },
       {
         path: "account",
-        component: () => import("pages/Account/index.vue")
-        // meta: {
-        //   requiresAuth: true
-        // }
+        component: () => import("pages/Account/index.vue"),
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
+        path: "premium",
+        component: () => import("pages/Account/Premium.vue"),
+        meta: {
+          requiresAuth: true
+        }
       },
       {
         path: "auth/callback/:provider",

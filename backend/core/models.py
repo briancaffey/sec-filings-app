@@ -11,7 +11,9 @@ class RequestLog(models.Model):
     Request Log
     """
 
-    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, blank=True)
+    user = models.ForeignKey(
+        User, null=True, on_delete=models.SET_NULL, blank=True
+    )
     date = models.DateTimeField(auto_now_add=True)
     path = models.CharField(max_length=3000)
     full_path = models.CharField(max_length=3000)

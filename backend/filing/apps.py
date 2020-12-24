@@ -6,4 +6,4 @@ class FilingConfig(AppConfig):
 
     def ready(self):
         # signals are imported, so that they are defined and can be used
-        import filing.signals
+        import filing.signals  # noqa

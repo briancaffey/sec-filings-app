@@ -41,7 +41,10 @@ class Migration(migrations.Migration):
                 ),
                 ("cusip_number", models.CharField(max_length=100)),
                 ("company_name", models.CharField(max_length=1000)),
-                ("symbol", models.CharField(blank=True, max_length=50, null=True)),
+                (
+                    "symbol",
+                    models.CharField(blank=True, max_length=50, null=True),
+                ),
             ],
         ),
         migrations.CreateModel(
@@ -82,7 +85,10 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("datafile", models.FileField(blank=True, null=True, upload_to="")),
+                (
+                    "datafile",
+                    models.FileField(blank=True, null=True, upload_to=""),
+                ),
                 ("quarter", models.DateField()),
                 ("filing_quarter", models.IntegerField()),
                 ("filing_year", models.IntegerField()),
@@ -137,7 +143,10 @@ class Migration(migrations.Migration):
                     "investmentDiscretion",
                     models.CharField(blank=True, max_length=500, null=True),
                 ),
-                ("putCall", models.CharField(blank=True, max_length=500, null=True)),
+                (
+                    "putCall",
+                    models.CharField(blank=True, max_length=500, null=True),
+                ),
                 (
                     "otherManager",
                     models.CharField(blank=True, max_length=500, null=True),

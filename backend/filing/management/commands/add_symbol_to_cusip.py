@@ -4,7 +4,7 @@ from filing.tasks import process_fails_to_deliver_data_file
 
 
 class Command(BaseCommand):
-    help = "Generates all filing lists from 1993 to present, but doesn't download files"
+    help = "Add stock tickers to CUSIP data"
 
     def handle(self, *args, **options):
         years = ["2017", "2018", "2019", "2020"]
@@ -25,5 +25,5 @@ class Command(BaseCommand):
         for year in years:
             for month in months:
                 for half in ["a", "b"]:
-                    URL = f"https://www.sec.gov/files/data/fails-deliver-data/cnsfails{year}{month}{half}.zip"
+                    URL = f"https://www.sec.gov/files/data/fails-deliver-data/cnsfails{year}{month}{half}.zip"  # noqa
                     process_fails_to_deliver_data_file.delay(URL)

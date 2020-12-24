@@ -1,8 +1,7 @@
 import datetime
-import uuid
 
 import factory
-from factory.fuzzy import FuzzyChoice, FuzzyDate, FuzzyDecimal, FuzzyInteger
+from factory.fuzzy import FuzzyChoice, FuzzyDate, FuzzyInteger
 
 from .models import (
     Filing,
