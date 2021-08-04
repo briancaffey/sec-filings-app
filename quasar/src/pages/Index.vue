@@ -8,7 +8,10 @@
         correctly, have a look at the checklist.
       </q-card-section>
       <q-card-section>
-        <q-btn color="primary">Development Checklist (coming soon)</q-btn>
+        <!-- <q-btn color="primary">Development Checklist (coming soon)</q-btn> -->
+        <ul>
+          <li>Verify that backend container is running. </li>
+        </ul>
       </q-card-section>
     </q-card>
     <q-card>
