@@ -1,13 +1,5 @@
 set -e
 
-# https://stackoverflow.com/questions/39296472/how-to-check-if-an-environment-variable-exists-and-get-its-value
-
-if [[ -z "${DOCKER_HOST}" ]]; then
-  echo "DOCKER_HOST not set, exiting."
-  exit 1;
-fi
-
-
 RED='\033[0;31m'
 NC='\033[0m'
 REGISTRY=localhost:5000

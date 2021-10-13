@@ -32,7 +32,7 @@ def process_filing_list(filing_list_id):
 
     filing_list = FilingList.objects.get(pk=filing_list_id)
 
-    if not filing_list.datafile:
+    if not filing_list.datafile.name:
         logger.info("no filing list datafile, downloading file from SEC")
         save_filing_list_file_to_model(filing_list.id)
 

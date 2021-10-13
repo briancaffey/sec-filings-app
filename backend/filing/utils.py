@@ -157,11 +157,24 @@ def process_filing_file(filing_id):
 
 
 def download_filing_list_file(filing_list_id):
+
     FilingList = apps.get_model("filing", "FilingList")
     filing_list = FilingList.objects.get(pk=filing_list_id)
     BASE_URL = "https://www.sec.gov/Archives/edgar/full-index"
+    # https://www.sec.gov/Archives/edgar/full-index/2021/QTR1/
     filing_list_url = f"{BASE_URL}/{filing_list.filing_year}/QTR{filing_list.filing_quarter}/master.idx"  # noqa
-    response = urllib.request.urlopen(filing_list_url)
+
+    logger.info(filing_list_url)
+    req = urllib.request.Request(
+        filing_list_url,
+        data=None,
+        headers={
+            'User-Agent': 'Open SEC Data brian@opensecdata.ga',
+            'Host': 'www.sec.gov'
+        }
+    )
+    response = urllib.request.urlopen(req)
+
     data = response.read()
     return io.BytesIO(data)
 
@@ -180,7 +193,15 @@ def download_filing_file(filing_id):
     Filing = apps.get_model("filing", "Filing")
     filing = Filing.objects.get(pk=filing_id)
     filing_url = f"{BASE_URL}{filing.filename}"
-    response = urllib.request.urlopen(filing_url)
+    req = urllib.request.Request(
+        filing_url,
+        data=None,
+        headers={
+            'User-Agent': 'Open SEC Data brian@opensecdata.ga',
+            'Host': 'www.sec.gov'
+        }
+    )
+    response = urllib.request.urlopen(req)
     data = response.read()
     return io.BytesIO(data)
 

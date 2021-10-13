@@ -106,9 +106,8 @@ services:
       - redis
 
   flower:
-    image: mher/flower:0.9
+    image: mher/flower:latest
     container_name: flower
-    command: --url_prefix=flower --inspect_timeout=20000
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/1
       - FLOWER_PORT=5555
@@ -126,7 +125,7 @@ services:
       # - traefik-public
       - main
     ports:
-      - "8080:80"
+      - "80:80"
     volumes:
       - backendassets:/usr/src/app/assets
   #   deploy:

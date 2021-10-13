@@ -29,10 +29,7 @@ SECRET_KEY = os.environ["SECRET_KEY"]
 DEBUG = bool(int(os.environ.get("DEBUG", "1")))
 
 # Allowed Hosts
-ALLOWED_HOSTS = [
-    os.environ.get("DOMAIN_NAME", "*"),
-    os.environ.get("DROPLET_IP", "localhost"),
-]
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 BASE_APPS = [

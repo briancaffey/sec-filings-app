@@ -13,6 +13,22 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
 
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin:/root/.pgadmin
+    ports:
+      - "5050:80"
+    depends_on:
+      - "postgres"
+    networks:
+      - main
+    restart: unless-stopped
+
   redis:
     image: redis:6.0.9-alpine
     volumes:
@@ -67,16 +83,10 @@ services:
       context: ./backend
       dockerfile: docker/Dockerfile.dev
     command:
-      - "watchmedo"
-      - "auto-restart"
-      - "--directory=./"
-      - "--pattern=*.py"
-      - "--recursive"
-      - "--"
-      - "python3"
-      - "manage.py"
-      - "runserver_plus"
-      - "0.0.0.0:8000"
+      - python3
+      - manage.py
+      - runserver
+      - 0.0.0.0:8000
     volumes:
       - ./backend:/code
     networks:
@@ -94,44 +104,14 @@ services:
     <<: *backend
     container_name: celery
     command:
-      - "watchmedo"
-      - "auto-restart"
-      - "--directory=./"
-      - "--pattern=*.py"
-      - "--recursive"
-      - "--"
-      - "celery"
-      - "--app=backend.celery_app:app"
-      - "worker"
-      - "-Q"
-      - "default"
-      - "--concurrency=1"
-      - "--loglevel=INFO"
+      - python3
+      - manage.py
+      - start_celery_local
     ports: []
 
-  # celery_other:
-  #   <<: *backend
-  #   container_name: celery_other
-  #   command:
-  #     - "watchmedo"
-  #     - "auto-restart"
-  #     - "--directory=./"
-  #     - "--pattern=*.py"
-  #     - "--recursive"
-  #     - "--"
-  #     - "celery"
-  #     - "worker"
-  #     - "--app=backend.celery_app:app"
-  #     - "-Q"
-  #     - "default"
-  #     - "--concurrency=6"
-  #     - "--loglevel=INFO"
-  #   ports: []
-
   flower:
-    image: mher/flower:0.9
+    image: mher/flower:latest
     container_name: flower
-    command: --url_prefix=flower --inspect_timeout=20000
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/1
       - FLOWER_PORT=5555
@@ -155,6 +135,7 @@ volumes:
   pg-data:
   django-static:
   redis-data:
+  pgadmin:
 
 networks:
   main:
