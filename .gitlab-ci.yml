@@ -23,9 +23,16 @@ Pytest:
     DJANGO_SETTINGS_MODULE: "backend.settings.gitlab_ci"
     # the database name is too long, setting here explicitly
     # DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/postgres"
+    POSTGRES_DB: ci
+    POSTGRES_NAME: ci
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: ""
+    POSTGRES_HOST_AUTH_METHOD: "trust"
+    POSTGRES_SERVICE_HOST: "postgres"
+    REDIS_SERVICE_HOST: "redis"
     SECRET_KEY: "secret"
     DEBUG: "1"
-    POSTGRES_HOST_AUTH_METHOD: trust
+
   script:
     - cd backend
     - pip install -r requirements/base.txt
