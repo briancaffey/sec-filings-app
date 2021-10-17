@@ -1,4 +1,5 @@
-from django.contrib import admin
+from datetime import date
+from django.contrib import admin, messages
 from django.core.management import call_command
 from django.utils.html import format_html
 from django.http import HttpResponseRedirect
@@ -61,11 +62,19 @@ class FilingListAdmin(admin.ModelAdmin):
 
     list_display = ("id", "datafile", "quarter", "filing_count")
 
+    readonly_fields = ("quarter",)
+
     change_form_template = "admin/filing/filinglist/change_form.html"
+
+    def save_model(self, request, obj, form, change):
+        if not obj.quarter:
+            obj.quarter = date(int(obj.filing_year), ((int(obj.filing_quarter) - 1) * 3) + 1, 1)
+        super(FilingListAdmin, self).save_model(request, obj, form, change)
 
     def process_filings(self, request, queryset):
         for filing_list in queryset:
             filing_list.process_filing_list()
+            messages.add_message(request, messages.INFO, 'Processing filing')
 
     actions = [process_filings]
 

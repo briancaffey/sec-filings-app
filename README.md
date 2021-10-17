@@ -20,7 +20,83 @@ This will start the project locally. It may take some time build the docker imag
 
 You can check the logs of `docker-compose up`, you should make sure that no service failed to start.
 
-Additional project documentation is coming soon.
+## Create an admin user
+
+Creating an admin user will give you a user email and password for logging into the Django admin and the main application. The Django admin can be used to download and process filings. To create the admin user, run the following command:
+
+```
+docker exec -it backend bash
+```
+
+This command will open a terminal in the backend container. In this terminal, run the following command:
+
+```
+python3 manage.py createsuperuser
+```
+
+Select an email and password for the admin user, then go to [`http://localhost/admin/`](http://localhost/admin/) and login with the admin account credentials.
+
+## Adding data to the application
+
+Once you have created an admin in the previous step, go to the filing list add page in the Django admin: [`http://localhost/admin/filing/filinglist/add/`](http://localhost/admin/filing/filinglist/add/)
+
+Specify the quarter and year for the filings that you would like to download. This will download a file from:
+
+```
+https://www.sec.gov/Archives/edgar/full-index/{year}/QTR{quarter}/master.idx
+```
+
+For example:
+
+```
+https://www.sec.gov/Archives/edgar/full-index/2021/QTR1/master.idx
+```
+
+This file contains a list of filing files:
+
+```
+Description:           Master Index of EDGAR Dissemination Feed
+Last Data Received:    March 31, 2020
+Comments:              webmaster@sec.gov
+Anonymous FTP:         ftp://ftp.sec.gov/edgar/
+Cloud HTTP:            https://www.sec.gov/Archives/
+
+
+
+
+CIK|Company Name|Form Type|Date Filed|Filename
+--------------------------------------------------------------------------------
+
+1000045|NICHOLAS FINANCIAL INC|SC 13G|2020-02-12|edgar/data/1000045/0001037389-20-000051.txt
+1000097|KINGDON CAPITAL MANAGEMENT, L.L.C.|13F-HR|2020-02-14|edgar/data/1000097/0001000097-20-000004.txt
+1000097|KINGDON CAPITAL MANAGEMENT, L.L.C.|SC 13G/A|2020-02-10|edgar/data/1000097/0000919574-20-000877.txt
+1000275|ROYAL BANK OF CANADA|10-D|2020-03-16|edgar/data/1000275/0001214659-20-002624.txt
+1000275|ROYAL BANK OF CANADA|13F-HR|2020-02-14|edgar/data/1000275/0001567619-20-003889.txt
+```
+
+Each line has the following values:
+
+```
+CIK|Company Name|Form Type|Date Filed|Filename
+```
+
+- CIK: Identification number of institutional investors
+- Company name: Name of the institutional investor
+- Form Type: This file contains a mix of filing types, but we are only interested in the 13F-HR files
+- Date field
+- Filename: file path (base URL is `https://www.sec.gov/Archives/`)
+
+For example, a filing file link would be:
+
+```
+https://www.sec.gov/Archives/edgar/data/1000097/0001000097-20-000004.txt
+```
+
+When a filing list file is processed, it will create celery tasks for processing each of the 13F-HR files listed in the `master.idx` file.
+
+When 13F filings are processed, the file's XML content is parsed and a list of `Holding` objects is created and the records are bulk created in the database.
+
+At this point you should be able to see filings, holdings, investors, etc. in the UI.
 
 ## Architecture overview
 

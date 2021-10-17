@@ -2,6 +2,7 @@ from collections import namedtuple
 import io
 import re
 import logging
+import time
 import urllib.request
 import xml.etree.ElementTree as ET
 
@@ -180,7 +181,7 @@ def download_filing_list_file(filing_list_id):
 
 
 def save_filing_list_file_to_model(filing_list_id):
-
+    logger.info(f"Saving filing list file {filing_list_id}")
     FilingList = apps.get_model("filing", "FilingList")
     filing_list = FilingList.objects.get(pk=filing_list_id)
     with download_filing_list_file(filing_list_id) as fh:
@@ -190,6 +191,7 @@ def save_filing_list_file_to_model(filing_list_id):
 
 
 def download_filing_file(filing_id):
+    logger.info(f"Downloading filing file #{filing_id}")
     Filing = apps.get_model("filing", "Filing")
     filing = Filing.objects.get(pk=filing_id)
     filing_url = f"{BASE_URL}{filing.filename}"

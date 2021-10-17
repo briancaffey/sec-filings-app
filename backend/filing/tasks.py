@@ -1,6 +1,7 @@
 import datetime
 import io
 import logging
+import time
 import urllib.request
 import zipfile
 
@@ -23,6 +24,8 @@ logger.setLevel(logging.INFO)
 
 @app.task(queue="default")
 def process_filing_list(filing_list_id):
+    print("sleeping for 10 seconds...")
+    time.sleep(10)
 
     FilingList = apps.get_model("filing", "FilingList")
     Filing = apps.get_model("filing", "Filing")
@@ -33,9 +36,16 @@ def process_filing_list(filing_list_id):
     filing_list = FilingList.objects.get(pk=filing_list_id)
 
     if not filing_list.datafile.name:
+        logger.info(f"Datafile name is: {filing_list.datafile.name}")
         logger.info("no filing list datafile, downloading file from SEC")
         save_filing_list_file_to_model(filing_list.id)
 
+    logger.info(f"Datafile name is: {filing_list.datafile.name}")
+    while filing_list.datafile.name is None:
+        print("sleeping for 5 seconds")
+        time.sleep(5)
+
+    logger.info(f"Datafile name is: {filing_list.datafile.name}")
     logger.info("####  Processing File  ####")
     lines = filing_list.datafile.read().decode("utf-8").split("\n")
 
@@ -110,7 +120,7 @@ def process_filing(filing_id):
 
     # download the data for the filing
     logger.info("checking presence of datafile")
-    if not filing.datafile:
+    if not filing.datafile.name:
         logger.info("no datafile, downloading file from SEC")
         save_filing_file_to_model(filing_id)
 

@@ -1,7 +1,10 @@
 import logging
 
 from django.apps import apps
+from django.contrib import messages
 from django.db import models
+
+
 
 from .tasks import process_filing_list
 
@@ -78,7 +81,7 @@ class FilingList(models.Model):
 
     datafile = models.FileField(null=True, blank=True)
 
-    quarter = models.DateField()
+    quarter = models.DateField(blank=True)
 
     filing_quarter = models.IntegerField(null=False, blank=False)
 
@@ -91,7 +94,7 @@ class FilingList(models.Model):
         logger.info(
             f"Sending 'Process Filing List' task to celery for {self}."
         )
-        process_filing_list.delay(self.id)
+        process_filing_list.apply_async(args=(self.id,))
 
     def filing_count(self):
         return self.filingcount
